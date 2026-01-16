@@ -1,0 +1,24 @@
+{
+  "name": "@keel/api-client",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Generated TypeScript client for Keel API",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "openapi-typescript ../../backend/api/openapi.yaml -o ./src/schema.d.ts",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.9.3"
+  },
+  "devDependencies": {
+    "@keel/config": "workspace:*",
+    "openapi-typescript": "^6.7.4",
+    "typescript": "^5.3.3"
+  }
+}
