@@ -37,7 +37,7 @@ dev: ## Start frontend + backend
 	@$(MAKE) -j2 dev-api dev-web
 
 dev-api: ## Start Go API (hot reload)
-	@cd backend && air
+	@cd backend && $(HOME)/go/bin/air
 
 dev-web: ## Start Next.js frontend
 	@cd frontend && pnpm dev

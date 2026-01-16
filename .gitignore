@@ -59,3 +59,7 @@ packages/api-client/src/schema.d.ts
 
 # Docker
 docker/data/
+
+# Backend
+backend/bin/
+backend/tmp/
