@@ -6,9 +6,10 @@ import {
   useForm,
   FormProvider,
   type FieldValues,
-  type UseFormReturn,
-  type DefaultValues,
-  type SubmitHandler,
+  UseFormReturn,
+  DefaultValues,
+  SubmitHandler,
+  Resolver,
 } from 'react-hook-form';
 
 import { cn } from '../../lib/utils';
@@ -33,7 +34,7 @@ export function Form<T extends FieldValues>({
   id,
 }: FormProps<T>) {
   const form = useForm<T>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any) as unknown as Resolver<T>,
     defaultValues,
   });
 
