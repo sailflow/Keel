@@ -10,7 +10,7 @@
   },
   "scripts": {
     "generate": "openapi-typescript ../../backend/api/openapi.yaml -o ./src/schema.d.ts",
-    "lint": "eslint src/",
+    "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

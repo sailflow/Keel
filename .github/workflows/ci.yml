@@ -97,7 +97,9 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Generate API client
-        run: bun --filter @keel/api-client run generate
+        run: |
+          cd packages/api-client
+          bun run generate
 
       - name: Check for changes
         run: |
