@@ -54,8 +54,6 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Generated files
-packages/api-client/src/schema.d.ts
 
 # Docker
 docker/data/

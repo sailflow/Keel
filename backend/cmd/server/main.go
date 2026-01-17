@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"database/sql"
+	"embed"
+	"io/fs"
 	"log"
 	"log/slog"
 	"net/http"
@@ -22,6 +24,9 @@ import (
 	"github.com/keel/api/internal/repository"
 	"github.com/keel/api/internal/service"
 )
+
+//go:embed dist
+var staticFiles embed.FS
 
 func main() {
 	// Configuration
@@ -83,6 +88,34 @@ func main() {
 			r.Put("/{id}", userHandler.Update)
 			r.Delete("/{id}", userHandler.Delete)
 		})
+	})
+
+	// Serve static files
+	staticFS, err := fs.Sub(staticFiles, "dist")
+	if err != nil {
+		log.Fatalf("Failed to create sub filesystem: %v", err)
+	}
+	fileServer := http.FileServer(http.FS(staticFS))
+
+	// Handle SPA routing - serve index.html for all non-API routes
+	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/")
+		if path == "" {
+			path = "index.html"
+		}
+
+		// Try to serve the requested file
+		f, err := staticFS.Open(path)
+		if err == nil {
+			// File exists, let FileServer handle it (will close the file)
+			f.Close()
+			fileServer.ServeHTTP(w, r)
+			return
+		}
+
+		// File doesn't exist, serve index.html for SPA routing
+		r.URL.Path = "/"
+		fileServer.ServeHTTP(w, r)
 	})
 
 	// Server

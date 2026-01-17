@@ -1,34 +1,73 @@
+'use client';
+
 import { Button } from '@keel/ui';
 import { Calendar, ChevronLeft, Edit2, Mail, Shield } from 'lucide-react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 
 import { api } from '@/lib/api';
 
 import type { User } from '@keel/api-client';
 
-interface UserDetailPageProps {
-  params: { id: string };
-}
+function UserDetailContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-async function getUser(id: string): Promise<User | null> {
-  const { data, error } = await api.GET('/api/users/{id}', {
-    params: { path: { id } },
-  });
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (!id) return;
+        const { data, error: apiError } = await api.GET('/api/users/{id}', {
+          params: { path: { id } },
+        });
 
-  if (error) {
-    if (error.code === 'NOT_FOUND') return null;
-    throw new Error(error.message);
+        if (apiError) {
+          if (apiError.code === 'NOT_FOUND') {
+            // notFound(); // Client-side 404
+            setError(new Error('User not found')); // safer for SPA
+          } else {
+            throw new Error(apiError.message);
+          }
+        } else {
+          setUser(data);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to fetch user'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchUser();
+    } else {
+      setIsLoading(false);
+    }
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <div className="bg-primary/10 h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
+      </div>
+    );
   }
 
-  return data;
-}
-
-export default async function UserDetailPage({ params }: UserDetailPageProps) {
-  const user = await getUser(params.id);
-
-  if (!user) {
-    notFound();
+  if (error || !user) {
+    return (
+      <div className="p-12 text-center">
+        <h3 className="font-medium">User not found</h3>
+        <Link href="/users">
+          <Button variant="outline" className="mt-4">
+            Back to Users
+          </Button>
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -48,7 +87,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           <h1 className="text-2xl font-semibold tracking-tight">{user.name}</h1>
           <p className="text-muted-foreground mt-1 text-sm">{user.email}</p>
         </div>
-        <Link href={`/users/${user.id}/edit`}>
+        <Link href={`/users/edit?id=${user.id}`}>
           <Button variant="outline" className="gap-2">
             <Edit2 className="h-4 w-4" />
             Edit
@@ -102,5 +141,19 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function UserDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-12">
+          <div className="bg-primary/10 h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
+        </div>
+      }
+    >
+      <UserDetailContent />
+    </Suspense>
   );
 }

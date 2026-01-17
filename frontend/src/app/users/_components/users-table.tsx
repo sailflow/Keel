@@ -140,7 +140,7 @@ export function UsersTable() {
               >
                 <td className="px-6 py-4">
                   <Link
-                    href={`/users/${user.id}`}
+                    href={`/users/view?id=${user.id}`}
                     className="hover:text-primary font-medium hover:underline"
                   >
                     {user.name}
