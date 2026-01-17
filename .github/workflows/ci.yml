@@ -70,7 +70,7 @@ jobs:
         working-directory: backend
         run: |
           mkdir -p cmd/server/dist
-          touch cmd/server/dist/.keep
+          touch cmd/server/dist/index.html
 
       - name: Lint
         uses: golangci/golangci-lint-action@v4
