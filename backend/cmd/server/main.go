@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"embed"
+	"encoding/json"
 	"io/fs"
 	"log"
 	"log/slog"
@@ -17,6 +18,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/keel/api/internal/handler"
@@ -29,9 +31,15 @@ import (
 var staticFiles embed.FS
 
 func main() {
+	// Load environment variables
+	if err := godotenv.Load(); err != nil {
+		slog.Warn("No .env file found")
+	}
+
 	// Configuration
 	port := getEnv("PORT", "8080")
 	dbURL := getEnv("DATABASE_URL", "file:./data/keel.db?_foreign_keys=on")
+	appName := getEnv("APP_NAME", "Keel")
 	corsOrigins := getEnv("CORS_ORIGINS", "http://localhost:3000")
 
 	// Database connection
@@ -78,8 +86,13 @@ func main() {
 
 	// Routes
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
+		resp := map[string]string{
+			"status":   "ok",
+			"app_name": appName,
+		}
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			slog.Error("failed to write health response", "error", err)
 		}
 	})

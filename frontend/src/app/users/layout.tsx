@@ -14,24 +14,25 @@ const navItems = [
 export default function UsersLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Keel';
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Mobile header */}
-      <header className="border-border bg-background sticky top-0 z-40 flex h-14 items-center gap-4 border-b px-4 lg:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-border bg-background px-4 lg:hidden">
         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
           <Menu className="h-5 w-5" />
         </Button>
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Logo className="text-primary h-9 w-9" />
-          <span>Keel</span>
+          <Logo className="h-9 w-9 text-primary" />
+          <span>{appName}</span>
         </Link>
       </header>
 
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="bg-background/80 fixed inset-0 z-50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -39,14 +40,14 @@ export default function UsersLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside
         className={cn(
-          'border-border bg-card fixed inset-y-0 left-0 z-50 w-64 transform border-r transition-transform duration-200 lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 w-64 transform border-r border-border bg-card transition-transform duration-200 lg:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="border-border flex h-14 items-center justify-between border-b px-4">
+        <div className="flex h-14 items-center justify-between border-b border-border px-4">
           <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Logo className="text-primary h-9 w-9" />
-            <span>Keel</span>
+            <Logo className="h-9 w-9 text-primary" />
+            <span>{appName}</span>
           </Link>
           <Button
             variant="ghost"

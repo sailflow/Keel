@@ -39,6 +39,7 @@ export default function ComponentsPage() {
   const { toast } = useToast();
   const [switchValue, setSwitchValue] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Keel';
 
   return (
     <TooltipProvider>
@@ -48,15 +49,19 @@ export default function ComponentsPage() {
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
               <Logo className="h-10 w-10 text-primary" />
-              <span className="text-lg">Keel</span>
+              <span className="text-lg">{appName}</span>
             </Link>
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <Link href="/">
-                <Button variant="ghost" size="sm">Home</Button>
+                <Button variant="ghost" size="sm">
+                  Home
+                </Button>
               </Link>
               <Link href="/users">
-                <Button variant="outline" size="sm">Demo</Button>
+                <Button variant="outline" size="sm">
+                  Demo
+                </Button>
               </Link>
             </div>
           </div>
@@ -66,13 +71,19 @@ export default function ComponentsPage() {
           <div className="mb-12">
             <h1 className="text-4xl font-bold text-slate-900 dark:text-white">Component Library</h1>
             <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
-              All UI components from <code className="rounded bg-slate-200 px-1.5 py-0.5 text-sm dark:bg-slate-800">@keel/ui</code>
+              All UI components from{' '}
+              <code className="rounded bg-slate-200 px-1.5 py-0.5 text-sm dark:bg-slate-800">
+                @keel/ui
+              </code>
             </p>
           </div>
 
           <div className="space-y-20">
             {/* Buttons */}
-            <ComponentSection title="Buttons" description="Interactive button components with variants and sizes">
+            <ComponentSection
+              title="Buttons"
+              description="Interactive button components with variants and sizes"
+            >
               <div className="space-y-6">
                 <div>
                   <p className="mb-3 text-sm font-medium text-slate-500">Variants</p>
@@ -91,7 +102,9 @@ export default function ComponentsPage() {
                     <Button size="sm">Small</Button>
                     <Button size="default">Default</Button>
                     <Button size="lg">Large</Button>
-                    <Button size="icon"><Search className="h-5 w-5" /></Button>
+                    <Button size="icon">
+                      <Search className="h-5 w-5" />
+                    </Button>
                   </div>
                 </div>
                 <div>
@@ -105,7 +118,10 @@ export default function ComponentsPage() {
             </ComponentSection>
 
             {/* Inputs */}
-            <ComponentSection title="Form Inputs" description="Text inputs, textareas, and form controls">
+            <ComponentSection
+              title="Form Inputs"
+              description="Text inputs, textareas, and form controls"
+            >
               <div className="grid max-w-lg gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="input-default">Default Input</Label>
@@ -126,7 +142,10 @@ export default function ComponentsPage() {
             </ComponentSection>
 
             {/* Toggles */}
-            <ComponentSection title="Toggles & Checkboxes" description="Boolean input controls for forms">
+            <ComponentSection
+              title="Toggles & Checkboxes"
+              description="Boolean input controls for forms"
+            >
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
                   <Switch checked={switchValue} onCheckedChange={setSwitchValue} />
@@ -188,7 +207,10 @@ export default function ComponentsPage() {
             </ComponentSection>
 
             {/* Avatars */}
-            <ComponentSection title="Avatars" description="User profile images with fallback initials">
+            <ComponentSection
+              title="Avatars"
+              description="User profile images with fallback initials"
+            >
               <div className="flex items-center gap-6">
                 <div className="text-center">
                   <Avatar fallback="JD" size="sm" />
@@ -220,21 +242,15 @@ export default function ComponentsPage() {
                 </Alert>
                 <Alert variant="success">
                   <AlertTitle>Success!</AlertTitle>
-                  <AlertDescription>
-                    Your changes have been saved successfully.
-                  </AlertDescription>
+                  <AlertDescription>Your changes have been saved successfully.</AlertDescription>
                 </Alert>
                 <Alert variant="warning">
                   <AlertTitle>Warning</AlertTitle>
-                  <AlertDescription>
-                    Your session will expire in 5 minutes.
-                  </AlertDescription>
+                  <AlertDescription>Your session will expire in 5 minutes.</AlertDescription>
                 </Alert>
                 <Alert variant="destructive">
                   <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>
-                    Something went wrong. Please try again.
-                  </AlertDescription>
+                  <AlertDescription>Something went wrong. Please try again.</AlertDescription>
                 </Alert>
               </div>
             </ComponentSection>
@@ -274,7 +290,9 @@ export default function ComponentsPage() {
                       <CardDescription>Change your password</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-slate-600">Update your password to keep your account secure.</p>
+                      <p className="text-sm text-slate-600">
+                        Update your password to keep your account secure.
+                      </p>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -285,7 +303,9 @@ export default function ComponentsPage() {
                       <CardDescription>Configure notifications</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-slate-600">Choose what notifications you want to receive.</p>
+                      <p className="text-sm text-slate-600">
+                        Choose what notifications you want to receive.
+                      </p>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -334,7 +354,7 @@ export default function ComponentsPage() {
               <div className="max-w-sm space-y-6">
                 <div className="flex items-center gap-4">
                   <Skeleton className="h-14 w-14 rounded-full" />
-                  <div className="space-y-2 flex-1">
+                  <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-3/4" />
                     <Skeleton className="h-3 w-1/2" />
                   </div>
@@ -348,7 +368,10 @@ export default function ComponentsPage() {
             </ComponentSection>
 
             {/* Separator */}
-            <ComponentSection title="Separator" description="Visual divider between content sections">
+            <ComponentSection
+              title="Separator"
+              description="Visual divider between content sections"
+            >
               <div className="max-w-sm rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex items-center gap-3">
                   <Avatar fallback="JD" size="md" />
@@ -374,30 +397,36 @@ export default function ComponentsPage() {
               <div className="flex flex-wrap gap-4">
                 <Button
                   variant="outline"
-                  onClick={() => toast({
-                    title: 'Changes saved',
-                    description: 'Your preferences have been updated successfully.',
-                  })}
+                  onClick={() =>
+                    toast({
+                      title: 'Changes saved',
+                      description: 'Your preferences have been updated successfully.',
+                    })
+                  }
                 >
                   Default Toast
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => toast({
-                    title: 'Success!',
-                    description: 'Your file has been uploaded.',
-                    variant: 'success'
-                  })}
+                  onClick={() =>
+                    toast({
+                      title: 'Success!',
+                      description: 'Your file has been uploaded.',
+                      variant: 'success',
+                    })
+                  }
                 >
                   Success Toast
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => toast({
-                    title: 'Error',
-                    description: 'Something went wrong. Please try again.',
-                    variant: 'destructive'
-                  })}
+                  onClick={() =>
+                    toast({
+                      title: 'Error',
+                      description: 'Something went wrong. Please try again.',
+                      variant: 'destructive',
+                    })
+                  }
                 >
                   Error Toast
                 </Button>
@@ -408,7 +437,10 @@ export default function ComponentsPage() {
           {/* Footer */}
           <div className="mt-20 border-t border-slate-200 pt-8 text-center dark:border-slate-800">
             <p className="text-slate-500">
-              Import components from <code className="rounded bg-slate-200 px-1.5 py-0.5 text-sm dark:bg-slate-800">@keel/ui</code>
+              Import components from{' '}
+              <code className="rounded bg-slate-200 px-1.5 py-0.5 text-sm dark:bg-slate-800">
+                @keel/ui
+              </code>
             </p>
           </div>
         </main>
@@ -420,7 +452,7 @@ export default function ComponentsPage() {
 function ComponentSection({
   title,
   description,
-  children
+  children,
 }: {
   title: string;
   description: string;

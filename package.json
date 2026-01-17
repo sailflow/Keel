@@ -32,9 +32,11 @@
     "clean": "turbo clean && rm -rf node_modules frontend/.next frontend/node_modules backend/bin backend/tmp packages/*/node_modules packages/*/dist",
     "docker:web": "docker build --target web -t keel-web .",
     "docker:api": "docker build --target api -t keel-api .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "configure": "bun run scripts/setup.ts"
   },
   "devDependencies": {
+    "@clack/prompts": "^0.11.0",
     "@next/eslint-plugin-next": "^14.1.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
