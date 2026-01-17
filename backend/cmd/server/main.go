@@ -45,7 +45,6 @@ func main() {
 		}
 	}()
 
-
 	// Run migrations
 	if err := runMigrations(db); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
