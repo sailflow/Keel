@@ -59,12 +59,17 @@ jobs:
 
       - name: Check formatting
         working-directory: backend
-        run: |
           if [ -n "$(gofmt -l .)" ]; then
             echo "Go files are not formatted:"
             gofmt -l .
             exit 1
           fi
+
+      - name: Create placeholder frontend assets
+        working-directory: backend
+        run: |
+          mkdir -p cmd/server/dist
+          touch cmd/server/dist/.keep
 
       - name: Lint
         uses: golangci/golangci-lint-action@v4
