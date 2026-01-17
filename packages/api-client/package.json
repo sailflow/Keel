@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@keel/config": "workspace:*",
-    "openapi-typescript": "^6.7.4",
+    "openapi-typescript": "^7.10.1",
     "typescript": "^5.3.3"
   }
 }
