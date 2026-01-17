@@ -59,6 +59,7 @@ jobs:
 
       - name: Check formatting
         working-directory: backend
+        run: |
           if [ -n "$(gofmt -l .)" ]; then
             echo "Go files are not formatted:"
             gofmt -l .
