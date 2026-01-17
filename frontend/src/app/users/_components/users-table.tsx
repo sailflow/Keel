@@ -1,22 +1,14 @@
 'use client';
 
-import type { User, UserListResponse } from '@keel/api-client';
-import { Button, useToast } from '@keel/ui';
-import { cn } from '@keel/ui';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Edit2,
-  MoreHorizontal,
-  Plus,
-  Trash2,
-  User as UserIcon,
-} from 'lucide-react';
+import { Button, cn, useToast } from '@keel/ui';
+import { ChevronLeft, ChevronRight, Edit2, Plus, Trash2, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { api } from '@/lib/api';
+
+import type { User, UserListResponse } from '@keel/api-client';
 
 export function UsersTable() {
   const searchParams = useSearchParams();
@@ -81,7 +73,7 @@ export function UsersTable() {
   if (isLoading && !data) {
     return (
       <div className="flex items-center justify-center p-12">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -90,11 +82,11 @@ export function UsersTable() {
   if (error) {
     return (
       <div className="p-12 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+        <div className="bg-destructive/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
           <span className="text-xl">!</span>
         </div>
         <h3 className="font-medium">Failed to load users</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{error.message}</p>
+        <p className="text-muted-foreground mt-1 text-sm">{error.message}</p>
         <Button variant="outline" className="mt-4" onClick={fetchUsers}>
           Try again
         </Button>
@@ -106,13 +98,11 @@ export function UsersTable() {
   if (!data?.data.length) {
     return (
       <div className="p-12 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-          <UserIcon className="h-6 w-6 text-muted-foreground" />
+        <div className="bg-muted mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+          <UserIcon className="text-muted-foreground h-6 w-6" />
         </div>
         <h3 className="font-medium">No users yet</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Create your first user to get started.
-        </p>
+        <p className="text-muted-foreground mt-1 text-sm">Create your first user to get started.</p>
         <Link href="/users/new">
           <Button className="mt-4 gap-2">
             <Plus className="h-4 w-4" />
@@ -131,7 +121,7 @@ export function UsersTable() {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border text-left text-sm text-muted-foreground">
+            <tr className="border-border text-muted-foreground border-b text-left text-sm">
               <th className="px-6 py-3 font-medium">Name</th>
               <th className="px-6 py-3 font-medium">Email</th>
               <th className="px-6 py-3 font-medium">Role</th>
@@ -141,33 +131,35 @@ export function UsersTable() {
           </thead>
           <tbody>
             {users.map((user, i) => (
-              <tr 
-                key={user.id} 
+              <tr
+                key={user.id}
                 className={cn(
-                  "border-b border-border transition-colors hover:bg-muted/50",
-                  i === users.length - 1 && "border-b-0"
+                  'border-border hover:bg-muted/50 border-b transition-colors',
+                  i === users.length - 1 && 'border-b-0'
                 )}
               >
                 <td className="px-6 py-4">
-                  <Link 
+                  <Link
                     href={`/users/${user.id}`}
-                    className="font-medium hover:text-primary hover:underline"
+                    className="hover:text-primary font-medium hover:underline"
                   >
                     {user.name}
                   </Link>
                 </td>
-                <td className="px-6 py-4 text-muted-foreground">{user.email}</td>
+                <td className="text-muted-foreground px-6 py-4">{user.email}</td>
                 <td className="px-6 py-4">
-                  <span className={cn(
-                    "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                    user.role === 'admin' 
-                      ? "bg-primary/10 text-primary" 
-                      : "bg-muted text-muted-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                      user.role === 'admin'
+                        ? 'bg-primary/10 text-primary'
+                        : 'bg-muted text-muted-foreground'
+                    )}
+                  >
                     {user.role}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-muted-foreground">
+                <td className="text-muted-foreground px-6 py-4">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4">
@@ -177,10 +169,10 @@ export function UsersTable() {
                         <Edit2 className="h-4 w-4" />
                       </Button>
                     </Link>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-destructive h-8 w-8"
                       onClick={() => handleDelete(user)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -195,8 +187,8 @@ export function UsersTable() {
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-border px-6 py-4">
-          <p className="text-sm text-muted-foreground">
+        <div className="border-border flex items-center justify-between border-t px-6 py-4">
+          <p className="text-muted-foreground text-sm">
             Page {pagination.page} of {pagination.totalPages}
           </p>
           <div className="flex items-center gap-2">

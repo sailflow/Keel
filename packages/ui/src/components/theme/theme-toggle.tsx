@@ -1,8 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import { Moon, Sun, Monitor } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import * as React from 'react';
 
 import { cn } from '../../lib/utils';
 
@@ -19,7 +19,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     return (
       <div
         className={cn(
-          'inline-flex h-10 items-center justify-center rounded-full bg-muted p-1',
+          'bg-muted inline-flex h-10 items-center justify-center rounded-full p-1',
           className
         )}
       >
@@ -33,7 +33,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'inline-flex h-10 items-center justify-center rounded-full bg-muted p-1',
+        'bg-muted inline-flex h-10 items-center justify-center rounded-full p-1',
         className
       )}
     >

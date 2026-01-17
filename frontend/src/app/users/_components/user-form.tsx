@@ -1,12 +1,13 @@
 'use client';
 
-import type { User } from '@keel/api-client';
 import { Button, Input, Label, useToast } from '@keel/ui';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { api } from '@/lib/api';
+
+import type { User } from '@keel/api-client';
 
 interface UserFormProps {
   user?: User;
@@ -60,13 +61,7 @@ export function UserForm({ user }: UserFormProps) {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          name="name"
-          placeholder="John Doe"
-          defaultValue={user?.name}
-          required
-        />
+        <Input id="name" name="name" placeholder="John Doe" defaultValue={user?.name} required />
       </div>
 
       <div className="space-y-2">
@@ -87,7 +82,7 @@ export function UserForm({ user }: UserFormProps) {
           id="role"
           name="role"
           defaultValue={user?.role ?? 'user'}
-          className="flex h-11 w-full rounded-lg border border-input bg-background px-4 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="border-input bg-background focus-visible:ring-ring flex h-11 w-full rounded-lg border px-4 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         >
           <option value="user">User</option>
           <option value="admin">Admin</option>

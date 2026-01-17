@@ -10,9 +10,10 @@ import {
   type DefaultValues,
   type SubmitHandler,
 } from 'react-hook-form';
-import type { ZodSchema } from 'zod';
 
 import { cn } from '../../lib/utils';
+
+import type { ZodSchema } from 'zod';
 
 interface FormProps<T extends FieldValues> {
   schema: ZodSchema<T>;
@@ -38,11 +39,7 @@ export function Form<T extends FieldValues>({
 
   return (
     <FormProvider {...form}>
-      <form
-        id={id}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('space-y-6', className)}
-      >
+      <form id={id} onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-6', className)}>
         {typeof children === 'function' ? children(form) : children}
       </form>
     </FormProvider>

@@ -1,24 +1,25 @@
+import { ThemeProvider, Toaster } from '@keel/ui';
 import '@keel/ui/globals.css';
+import { GeistMono } from 'geist/font/mono'; // eslint-disable-line import/no-unresolved
+import { GeistSans } from 'geist/font/sans'; // eslint-disable-line import/no-unresolved
+
 import './globals.css';
 
-import { Toaster, ThemeProvider } from '@keel/ui';
 import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
 
 export const metadata: Metadata = {
   title: 'Keel',
   description: 'AI App Template',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+    <html
+      lang="en"
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="bg-background min-h-screen font-sans antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
