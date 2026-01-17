@@ -1,10 +1,10 @@
 # Build stage for frontend
 FROM oven/bun:latest AS frontend-builder
 WORKDIR /app
-COPY frontend/package.json frontend/bun.lockb ./frontend/
+COPY frontend/package.json ./frontend/
 COPY packages/ ./packages/
 # Install dependencies for all workspaces
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
 # Copy source code
