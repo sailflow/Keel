@@ -73,7 +73,7 @@ jobs:
           touch cmd/server/dist/index.html
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v9
         with:
           working-directory: backend
           version: latest
