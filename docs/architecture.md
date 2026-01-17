@@ -27,6 +27,7 @@ keel/
 **Tech**: Next.js 14, TypeScript, TailwindCSS, Radix UI
 
 **Page structure** (required pattern):
+
 ```tsx
 <AppShell>
   <Page>
@@ -40,6 +41,7 @@ keel/
 ```
 
 **Data fetching**: Use `api` client from `@/lib/api`
+
 ```tsx
 const { data, error } = await api.GET('/api/users');
 ```
@@ -49,11 +51,13 @@ const { data, error } = await api.GET('/api/users');
 **Tech**: Go 1.22, Chi router, SQLite
 
 **Layer structure**:
+
 ```
 Handler (HTTP) → Service (business logic) → Repository (data)
 ```
 
 **Standard error response**:
+
 ```json
 {
   "code": "NOT_FOUND",
@@ -63,6 +67,7 @@ Handler (HTTP) → Service (business logic) → Repository (data)
 ```
 
 **Standard pagination**:
+
 ```json
 {
   "data": [...],
@@ -74,14 +79,14 @@ Handler (HTTP) → Service (business logic) → Repository (data)
 
 - Defined in `backend/api/openapi.yaml`
 - TypeScript types generated to `packages/api-client/src/schema.d.ts`
-- Run `make generate` after changing the spec
+- Run `bun run generate` after changing the spec
 
 ## Key Files
 
-| Purpose | Location |
-|---------|----------|
-| API spec | `backend/api/openapi.yaml` |
-| API client | `packages/api-client/src/client.ts` |
-| UI components | `packages/ui/src/components/` |
-| Root layout | `frontend/src/app/layout.tsx` |
-| API entry | `backend/cmd/server/main.go` |
+| Purpose       | Location                            |
+| ------------- | ----------------------------------- |
+| API spec      | `backend/api/openapi.yaml`          |
+| API client    | `packages/api-client/src/client.ts` |
+| UI components | `packages/ui/src/components/`       |
+| Root layout   | `frontend/src/app/layout.tsx`       |
+| API entry     | `backend/cmd/server/main.go`        |

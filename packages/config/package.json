@@ -5,6 +5,7 @@
   "description": "Shared configuration for ESLint, TypeScript, and Tailwind",
   "exports": {
     "./eslint": "./eslint/index.js",
+    "./eslint/nextjs": "./eslint/nextjs.js",
     "./typescript/base": "./typescript/base.json",
     "./typescript/nextjs": "./typescript/nextjs.json",
     "./typescript/react-library": "./typescript/react-library.json",

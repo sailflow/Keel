@@ -5,7 +5,7 @@ OpenAPI-first development. Spec is source of truth.
 ## Workflow
 
 1. Edit `backend/api/openapi.yaml`
-2. Run `make generate`
+2. Run `bun run generate`
 3. Types appear in `packages/api-client/src/schema.d.ts`
 4. Use typed client in frontend
 
@@ -16,34 +16,35 @@ import { api } from '@/lib/api';
 
 // GET
 const { data, error } = await api.GET('/api/users', {
-  params: { query: { page: 1, limit: 10 } }
+  params: { query: { page: 1, limit: 10 } },
 });
 
 // POST
 const { data, error } = await api.POST('/api/users', {
-  body: { email: 'user@example.com', name: 'John' }
+  body: { email: 'user@example.com', name: 'John' },
 });
 
 // GET with path param
 const { data, error } = await api.GET('/api/users/{id}', {
-  params: { path: { id: userId } }
+  params: { path: { id: userId } },
 });
 
 // PUT
 const { data, error } = await api.PUT('/api/users/{id}', {
   params: { path: { id: userId } },
-  body: { name: 'New Name' }
+  body: { name: 'New Name' },
 });
 
 // DELETE
 const { error } = await api.DELETE('/api/users/{id}', {
-  params: { path: { id: userId } }
+  params: { path: { id: userId } },
 });
 ```
 
 ## Response Formats
 
 ### Success (single item)
+
 ```json
 {
   "id": "uuid",
@@ -54,6 +55,7 @@ const { error } = await api.DELETE('/api/users/{id}', {
 ```
 
 ### Success (list)
+
 ```json
 {
   "data": [{ ... }, { ... }],
@@ -67,6 +69,7 @@ const { error } = await api.DELETE('/api/users/{id}', {
 ```
 
 ### Error
+
 ```json
 {
   "code": "NOT_FOUND",
@@ -78,17 +81,18 @@ const { error } = await api.DELETE('/api/users/{id}', {
 
 ## Error Codes
 
-| Code | HTTP | Meaning |
-|------|------|---------|
-| `VALIDATION_ERROR` | 400 | Invalid input |
-| `BAD_REQUEST` | 400 | Malformed request |
-| `NOT_FOUND` | 404 | Resource not found |
-| `CONFLICT` | 409 | Duplicate resource |
-| `INTERNAL_ERROR` | 500 | Server error |
+| Code               | HTTP | Meaning            |
+| ------------------ | ---- | ------------------ |
+| `VALIDATION_ERROR` | 400  | Invalid input      |
+| `BAD_REQUEST`      | 400  | Malformed request  |
+| `NOT_FOUND`        | 404  | Resource not found |
+| `CONFLICT`         | 409  | Duplicate resource |
+| `INTERNAL_ERROR`   | 500  | Server error       |
 
 ## Adding Endpoints
 
 1. Add path to `backend/api/openapi.yaml`:
+
 ```yaml
 /api/posts:
   get:
@@ -101,7 +105,7 @@ const { error } = await api.DELETE('/api/users/{id}', {
               $ref: '#/components/schemas/PostListResponse'
 ```
 
-2. Run `make generate`
+2. Run `bun run generate`
 
 3. Implement handler in `backend/internal/handler/`
 
