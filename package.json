@@ -3,24 +3,68 @@
   "version": "0.0.1",
   "private": true,
   "description": "Monorepo template with Next.js, Go API, and shared packages",
+  "workspaces": [
+    "frontend",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "lint": "turbo lint",
+    "dev": "concurrently -n \"WEB,API\" -c \"bgBlue.bold,bgMagenta.bold\" \"bun run dev:web\" \"bun run dev:api\"",
+    "dev:web": "turbo dev --filter @keel/web",
+    "dev:api": "cd backend && ~/go/bin/air",
+    "build": "bun run build:web && bun run build:api",
+    "build:web": "turbo build --filter @keel/web",
+    "build:api": "cd backend && go build -o bin/server ./cmd/server",
+    "lint": "bun run lint:web && bun run lint:api",
+    "lint:web": "turbo lint",
+    "lint:api": "cd backend && ~/go/bin/golangci-lint run ./...",
+    "format": "bun run format:web && bun run format:api",
+    "format:web": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:api": "cd backend && gofmt -w .",
+    "check-api-sync": "cd packages/api-client && bun run generate && git diff --quiet --exit-code src/schema.d.ts || (echo 'API/Client out of sync! Run \"bun run generate\" in packages/api-client' && exit 1)",
     "typecheck": "turbo typecheck",
-    "test": "turbo test",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "clean": "turbo clean && rm -rf node_modules",
-    "generate": "turbo generate"
+    "test": "bun run test:web && bun run test:api",
+    "test:web": "turbo test",
+    "test:api": "cd backend && go test -v ./...",
+    "generate": "bun run generate:api",
+    "generate:api": "cd packages/api-client && bun run generate",
+    "db:reset": "rm -f backend/data/keel.db && echo 'Database reset'",
+    "setup": "go install github.com/air-verse/air@latest && go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest",
+    "clean": "turbo clean && rm -rf node_modules frontend/.next frontend/node_modules backend/bin backend/tmp packages/*/node_modules packages/*/dist",
+    "docker:web": "docker build --target web -t keel-web .",
+    "docker:api": "docker build --target api -t keel-api .",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^14.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "turbo": "^2.0.0"
   },
-  "packageManager": "pnpm@9.0.0",
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ],
+    "backend/**/*.go": [
+      "gofmt -w"
+    ]
+  },
+  "packageManager": "bun@1.0.0",
   "engines": {
     "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "bun": ">=1.0.0"
   }
 }

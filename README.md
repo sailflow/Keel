@@ -11,16 +11,27 @@ A starter template for building AI-powered web applications. Clone this repo to 
 
 ## Prerequisites
 
-- **Node.js** 20+ ([install](https://nodejs.org/))
+- **Bun** 1.0+ ([install](https://bun.sh/))
 - **Go** 1.22+ ([install](https://go.dev/dl/))
 
 ## Quick Start
 
-```bash
-make setup      # Install pnpm, air, golangci-lint (one-time)
-make install    # Install project dependencies
-make dev        # Start frontend (:3000) + backend (:8080)
-```
+1.  **Install dependencies & tools:**
+
+    ```bash
+    bun install
+    bun run setup
+    ```
+
+2.  **Start development server:**
+
+    ```bash
+    bun run dev
+    ```
+
+    This kicks off:
+    - **Frontend:** `http://localhost:3000`
+    - **Backend:** `http://localhost:8080` (with hot reload enabled)
 
 ## Structure
 
@@ -38,19 +49,20 @@ keel/
 ## Commands
 
 ```bash
-make setup        # Install pnpm + Go tools (one-time)
-make install      # Install project dependencies
-make dev          # Start all
-make dev-web      # Frontend only
-make dev-api      # Backend only
-make build        # Build all
-make lint         # Lint all
-make generate     # Regenerate API types
+bun run setup       # Install Go tools (one-time)
+bun run dev         # Start all (frontend + backend)
+bun run dev:web     # Frontend only
+bun run dev:api     # Backend only
+bun run build       # Build all
+bun run lint        # Lint all
+bun run test        # Run tests
+bun run clean       # Clean up
+bun run generate    # Regenerate API client
 ```
 
 ## Adding Features
 
-1. **New API endpoint**: Add to `backend/api/openapi.yaml`, run `make generate`
+1. **New API endpoint**: Add to `backend/api/openapi.yaml`, run `bun run generate`
 2. **New page**: Add to `frontend/src/app/`
 3. **New component**: Add to `packages/ui/src/components/`
 

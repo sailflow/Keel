@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -116,16 +117,20 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		slog.Error("failed to encode response", "error", err)
+	}
 }
 
 func writeError(w http.ResponseWriter, r *http.Request, status int, code, message string, details interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(model.APIError{
+	if err := json.NewEncoder(w).Encode(model.APIError{
 		Code:      code,
 		Message:   message,
 		Details:   details,
 		RequestID: middleware.GetRequestID(r.Context()),
-	})
+	}); err != nil {
+		slog.Error("failed to encode error response", "error", err)
+	}
 }
