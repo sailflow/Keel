@@ -11,13 +11,13 @@ A starter template for building AI-powered web applications. Clone this repo to 
 
 ## Prerequisites
 
-- **Node.js** 20+ ([install](https://nodejs.org/))
+- **Bun** 1.0+ ([install](https://bun.sh/))
 - **Go** 1.22+ ([install](https://go.dev/dl/))
 
 ## Quick Start
 
 ```bash
-make setup      # Install pnpm, air, golangci-lint (one-time)
+make setup      # Install Bun, air, golangci-lint (one-time)
 make install    # Install project dependencies
 make dev        # Start frontend (:3000) + backend (:8080)
 ```
@@ -38,7 +38,7 @@ keel/
 ## Commands
 
 ```bash
-make setup        # Install pnpm + Go tools (one-time)
+make setup        # Install Bun + Go tools (one-time)
 make install      # Install project dependencies
 make dev          # Start all
 make dev-web      # Frontend only

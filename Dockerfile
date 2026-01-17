@@ -24,17 +24,19 @@ CMD ["/app/server"]
 # =============================================================================
 # WEB (Next.js)
 # =============================================================================
-FROM node:20-alpine AS web-base
-RUN corepack enable && corepack prepare pnpm@9 --activate
+# =============================================================================
+# WEB (Next.js)
+# =============================================================================
+FROM oven/bun:1 AS web-base
 
 FROM web-base AS web-deps
 WORKDIR /app
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml* ./
+COPY package.json bun.lockb ./
 COPY packages/config/package.json ./packages/config/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/api-client/package.json ./packages/api-client/
 COPY frontend/package.json ./frontend/
-RUN pnpm install --frozen-lockfile
+RUN bun install --frozen-lockfile
 
 FROM web-base AS web-builder
 WORKDIR /app
@@ -45,9 +47,9 @@ COPY --from=web-deps /app/packages/api-client/node_modules ./packages/api-client
 COPY --from=web-deps /app/frontend/node_modules ./frontend/node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm --filter @keel/web build
+RUN bun --filter @keel/web build
 
-FROM web-base AS web
+FROM oven/bun:1-alpine AS web
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -58,4 +60,4 @@ COPY --from=web-builder --chown=nextjs:nodejs /app/frontend/.next/static ./front
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000 HOSTNAME="0.0.0.0"
-CMD ["node", "frontend/server.js"]
+CMD ["bun", "frontend/server.js"]

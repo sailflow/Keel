@@ -21,9 +21,9 @@ help: ## Show available commands
 # SETUP
 # ============================================================================
 
-setup: ## Install prerequisites (pnpm, air, golangci-lint)
-	@echo "$(CYAN)Installing pnpm...$(RESET)"
-	@npm install -g pnpm@9 2>/dev/null || (corepack enable && corepack prepare pnpm@9 --activate)
+setup: ## Install prerequisites (bun, air, golangci-lint)
+	@echo "$(CYAN)Checking for Bun...$(RESET)"
+	@command -v bun >/dev/null 2>&1 || (echo "$(CYAN)Installing Bun...$(RESET)" && curl -fsSL https://bun.sh/install | bash)
 	@echo "$(CYAN)Installing Go tools...$(RESET)"
 	@go install github.com/air-verse/air@latest
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -40,14 +40,14 @@ dev-api: ## Start Go API (hot reload)
 	@cd backend && $(HOME)/go/bin/air
 
 dev-web: ## Start Next.js frontend
-	@cd frontend && pnpm dev
+	@cd frontend && bun dev
 
 # ============================================================================
 # BUILD
 # ============================================================================
 
 install: ## Install all dependencies
-	@pnpm install
+	@bun install
 	@cd backend && go mod download
 
 build: build-api build-web ## Build all
@@ -56,7 +56,7 @@ build-api: ## Build Go API
 	@cd backend && go build -o bin/server ./cmd/server
 
 build-web: ## Build Next.js
-	@pnpm --filter @keel/web build
+	@bun --filter @keel/web build
 
 # ============================================================================
 # CODE QUALITY
@@ -68,14 +68,14 @@ lint-api:
 	@cd backend && golangci-lint run ./...
 
 lint-web:
-	@pnpm lint
+	@bun run lint
 
 fmt: ## Format all code
-	@pnpm format
+	@bun run format
 	@cd backend && go fmt ./...
 
 typecheck: ## TypeScript check
-	@pnpm typecheck
+	@bun run typecheck
 
 # ============================================================================
 # TEST
@@ -87,7 +87,7 @@ test-api:
 	@cd backend && go test -v ./...
 
 test-web:
-	@pnpm test
+	@bun run test
 
 # ============================================================================
 # GENERATION
@@ -96,7 +96,7 @@ test-web:
 generate: generate-api ## Regenerate API types
 
 generate-api: ## Generate TypeScript types from OpenAPI
-	@pnpm --filter @keel/api-client generate
+	@bun --filter @keel/api-client run generate
 
 # ============================================================================
 # DATABASE
