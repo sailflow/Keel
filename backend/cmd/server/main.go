@@ -39,7 +39,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("Error closing database: %v", err)
+		}
+	}()
+
 
 	// Run migrations
 	if err := runMigrations(db); err != nil {
@@ -108,7 +113,8 @@ func main() {
 		f, err := staticFS.Open(path)
 		if err == nil {
 			// File exists, let FileServer handle it (will close the file)
-			f.Close()
+			_ = f.Close()
+
 			fileServer.ServeHTTP(w, r)
 			return
 		}

@@ -41,7 +41,9 @@ func (r *UserRepository) List(ctx context.Context, page, limit int) ([]model.Use
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var users []model.User
 	for rows.Next() {

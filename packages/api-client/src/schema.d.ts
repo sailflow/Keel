@@ -3,275 +3,358 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/health": {
-    /** Health check */
-    get: operations["healthCheck"];
-  };
-  "/api/users": {
-    /** List users */
-    get: operations["listUsers"];
-    /** Create a new user */
-    post: operations["createUser"];
-  };
-  "/api/users/{id}": {
-    /** Get a user by ID */
-    get: operations["getUser"];
-    /** Update a user */
-    put: operations["updateUser"];
-    /** Delete a user */
-    delete: operations["deleteUser"];
-    parameters: {
-      path: {
-        id: components["parameters"]["UserIdParam"];
-      };
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Health check */
+        get: operations["healthCheck"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List users */
+        get: operations["listUsers"];
+        put?: never;
+        /** Create a new user */
+        post: operations["createUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                id: components["parameters"]["UserIdParam"];
+            };
+            cookie?: never;
+        };
+        /** Get a user by ID */
+        get: operations["getUser"];
+        /** Update a user */
+        put: operations["updateUser"];
+        post?: never;
+        /** Delete a user */
+        delete: operations["deleteUser"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: {
-    User: {
-      /**
-       * Format: uuid
-       * @description Unique identifier
-       */
-      id: string;
-      /**
-       * Format: email
-       * @description User email address
-       */
-      email: string;
-      /** @description User full name */
-      name: string;
-      /**
-       * @description User role
-       * @enum {string}
-       */
-      role: "admin" | "user";
-      /**
-       * Format: date-time
-       * @description Creation timestamp
-       */
-      createdAt: string;
-      /**
-       * Format: date-time
-       * @description Last update timestamp
-       */
-      updatedAt: string;
+    schemas: {
+        User: {
+            /**
+             * Format: uuid
+             * @description Unique identifier
+             */
+            id: string;
+            /**
+             * Format: email
+             * @description User email address
+             */
+            email: string;
+            /** @description User full name */
+            name: string;
+            /**
+             * @description User role
+             * @enum {string}
+             */
+            role: "admin" | "user";
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updatedAt: string;
+        };
+        CreateUserRequest: {
+            /**
+             * Format: email
+             * @description User email address
+             */
+            email: string;
+            /** @description User full name */
+            name: string;
+            /**
+             * @description User role
+             * @default user
+             * @enum {string}
+             */
+            role: "admin" | "user";
+        };
+        UpdateUserRequest: {
+            /**
+             * Format: email
+             * @description User email address
+             */
+            email?: string;
+            /** @description User full name */
+            name?: string;
+            /**
+             * @description User role
+             * @enum {string}
+             */
+            role?: "admin" | "user";
+        };
+        Pagination: {
+            /** @description Current page number */
+            page: number;
+            /** @description Items per page */
+            limit: number;
+            /** @description Total number of items */
+            total: number;
+            /** @description Total number of pages */
+            totalPages: number;
+        };
+        UserListResponse: {
+            data: components["schemas"]["User"][];
+            pagination: components["schemas"]["Pagination"];
+        };
+        APIError: {
+            /**
+             * @description Error code
+             * @enum {string}
+             */
+            code: "VALIDATION_ERROR" | "NOT_FOUND" | "CONFLICT" | "INTERNAL_ERROR" | "BAD_REQUEST" | "UNAUTHORIZED";
+            /** @description Human-readable error message */
+            message: string;
+            /** @description Additional error details */
+            details?: unknown;
+            /** @description Request ID for tracking */
+            requestId: string;
+        };
     };
-    CreateUserRequest: {
-      /**
-       * Format: email
-       * @description User email address
-       */
-      email: string;
-      /** @description User full name */
-      name: string;
-      /**
-       * @description User role
-       * @default user
-       * @enum {string}
-       */
-      role?: "admin" | "user";
+    responses: {
+        /** @description Bad request */
+        BadRequest: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["APIError"];
+            };
+        };
+        /** @description Resource not found */
+        NotFound: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["APIError"];
+            };
+        };
+        /** @description Resource conflict */
+        Conflict: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["APIError"];
+            };
+        };
+        /** @description Internal server error */
+        InternalError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["APIError"];
+            };
+        };
     };
-    UpdateUserRequest: {
-      /**
-       * Format: email
-       * @description User email address
-       */
-      email?: string;
-      /** @description User full name */
-      name?: string;
-      /**
-       * @description User role
-       * @enum {string}
-       */
-      role?: "admin" | "user";
+    parameters: {
+        /** @description Page number (1-indexed) */
+        PageParam: number;
+        /** @description Number of items per page */
+        LimitParam: number;
+        /** @description User ID */
+        UserIdParam: string;
     };
-    Pagination: {
-      /** @description Current page number */
-      page: number;
-      /** @description Items per page */
-      limit: number;
-      /** @description Total number of items */
-      total: number;
-      /** @description Total number of pages */
-      totalPages: number;
-    };
-    UserListResponse: {
-      data: components["schemas"]["User"][];
-      pagination: components["schemas"]["Pagination"];
-    };
-    APIError: {
-      /**
-       * @description Error code
-       * @enum {string}
-       */
-      code: "VALIDATION_ERROR" | "NOT_FOUND" | "CONFLICT" | "INTERNAL_ERROR" | "BAD_REQUEST" | "UNAUTHORIZED";
-      /** @description Human-readable error message */
-      message: string;
-      /** @description Additional error details */
-      details?: unknown;
-      /** @description Request ID for tracking */
-      requestId: string;
-    };
-  };
-  responses: {
-    /** @description Bad request */
-    BadRequest: {
-      content: {
-        "application/json": components["schemas"]["APIError"];
-      };
-    };
-    /** @description Resource not found */
-    NotFound: {
-      content: {
-        "application/json": components["schemas"]["APIError"];
-      };
-    };
-    /** @description Resource conflict */
-    Conflict: {
-      content: {
-        "application/json": components["schemas"]["APIError"];
-      };
-    };
-    /** @description Internal server error */
-    InternalError: {
-      content: {
-        "application/json": components["schemas"]["APIError"];
-      };
-    };
-  };
-  parameters: {
-    /** @description Page number (1-indexed) */
-    PageParam?: number;
-    /** @description Number of items per page */
-    LimitParam?: number;
-    /** @description User ID */
-    UserIdParam: string;
-  };
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export interface operations {
-
-  /** Health check */
-  healthCheck: {
-    responses: {
-      /** @description Service is healthy */
-      200: {
-        content: {
-          "application/json": {
-            /** @example ok */
-            status?: string;
-          };
+    healthCheck: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  /** List users */
-  listUsers: {
-    parameters: {
-      query?: {
-        page?: components["parameters"]["PageParam"];
-        limit?: components["parameters"]["LimitParam"];
-      };
-    };
-    responses: {
-      /** @description List of users */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserListResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description Service is healthy */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ok */
+                        status?: string;
+                    };
+                };
+            };
         };
-      };
-      500: components["responses"]["InternalError"];
     };
-  };
-  /** Create a new user */
-  createUser: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CreateUserRequest"];
-      };
-    };
-    responses: {
-      /** @description User created successfully */
-      201: {
-        content: {
-          "application/json": components["schemas"]["User"];
+    listUsers: {
+        parameters: {
+            query?: {
+                /** @description Page number (1-indexed) */
+                page?: components["parameters"]["PageParam"];
+                /** @description Number of items per page */
+                limit?: components["parameters"]["LimitParam"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      400: components["responses"]["BadRequest"];
-      409: components["responses"]["Conflict"];
-      500: components["responses"]["InternalError"];
-    };
-  };
-  /** Get a user by ID */
-  getUser: {
-    parameters: {
-      path: {
-        id: components["parameters"]["UserIdParam"];
-      };
-    };
-    responses: {
-      /** @description User details */
-      200: {
-        content: {
-          "application/json": components["schemas"]["User"];
+        requestBody?: never;
+        responses: {
+            /** @description List of users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserListResponse"];
+                };
+            };
+            500: components["responses"]["InternalError"];
         };
-      };
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalError"];
     };
-  };
-  /** Update a user */
-  updateUser: {
-    parameters: {
-      path: {
-        id: components["parameters"]["UserIdParam"];
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UpdateUserRequest"];
-      };
-    };
-    responses: {
-      /** @description User updated successfully */
-      200: {
-        content: {
-          "application/json": components["schemas"]["User"];
+    createUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      400: components["responses"]["BadRequest"];
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalError"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUserRequest"];
+            };
+        };
+        responses: {
+            /** @description User created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            409: components["responses"]["Conflict"];
+            500: components["responses"]["InternalError"];
+        };
     };
-  };
-  /** Delete a user */
-  deleteUser: {
-    parameters: {
-      path: {
-        id: components["parameters"]["UserIdParam"];
-      };
+    getUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                id: components["parameters"]["UserIdParam"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+        };
     };
-    responses: {
-      /** @description User deleted successfully */
-      204: {
-        content: never;
-      };
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalError"];
+    updateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                id: components["parameters"]["UserIdParam"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserRequest"];
+            };
+        };
+        responses: {
+            /** @description User updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+        };
     };
-  };
+    deleteUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                id: components["parameters"]["UserIdParam"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+        };
+    };
 }
