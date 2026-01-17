@@ -1,4 +1,4 @@
-import { intro, outro, text, isCancel, cancel } from '@clack/prompts';
+import { intro, outro, text, confirm, isCancel, cancel } from '@clack/prompts';
 import { join } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
@@ -24,6 +24,17 @@ async function main() {
     process.exit(0);
   }
   configState.appName = appName as string;
+
+  // 2. Auth Configuration
+  const enableAuth = await confirm({
+    message: 'Does your application require authentication?',
+    initialValue: true,
+  });
+
+  if (isCancel(enableAuth)) {
+    cancel('Operation cancelled.');
+    process.exit(0);
+  }
 
   // Helper to update env vars
   const updateEnvVar = (content: string, key: string, value: string) => {
@@ -57,6 +68,11 @@ async function main() {
     frontendEnvContent,
     'NEXT_PUBLIC_APP_NAME',
     configState.appName
+  );
+  frontendEnvContent = updateEnvVar(
+    frontendEnvContent,
+    'NEXT_PUBLIC_ENABLE_AUTH',
+    String(enableAuth)
   );
   writeFileSync(frontendEnvPath, frontendEnvContent.trim() + '\n');
   console.log('Updated frontend/.env.local');

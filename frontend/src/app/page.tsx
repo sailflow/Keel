@@ -1,162 +1,222 @@
 'use client';
 
-import { Button, Logo, ThemeToggle } from '@keel/ui';
-import { Blocks, Code2, Sparkles, Zap } from 'lucide-react';
+import {
+  Button,
+  Logo,
+  ThemeToggle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Avatar,
+} from '@keel/ui';
+import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function HomePage() {
   const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Keel';
+  const enableAuth = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true';
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   return (
-    <div className="min-h-screen">
-      {/* Nav */}
-      <nav className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Logo className="h-10 w-10 text-primary" />
-            <span>{appName}</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link href="/components">
-              <Button variant="ghost" size="sm">
-                Components
-              </Button>
-            </Link>
-            <Link href="/users">
-              <Button variant="outline" size="sm">
-                Demo
-              </Button>
-            </Link>
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
+        <div className="flex h-16 w-full items-center px-6 md:px-12">
+          {/* Grid Layout for Perfect Centering */}
+          <div className="grid w-full grid-cols-2 items-center md:grid-cols-3">
+            {/* Left: Logo */}
+            <div className="flex items-center justify-start">
+              <Link href="/" className="flex items-center gap-2 text-xl font-bold">
+                <Logo className="h-8 w-8 text-primary" />
+                <span>{appName}</span>
+              </Link>
+            </div>
+
+            {/* Center: Desktop Nav Links */}
+            <div className="hidden justify-center gap-8 md:flex">
+              <Link
+                href="#"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Product
+              </Link>
+              <Link
+                href="#"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Resources
+              </Link>
+              <Link
+                href="#"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Company
+              </Link>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center justify-end gap-4">
+              <ThemeToggle />
+
+              {/* Auth UI */}
+              {enableAuth ? (
+                <div className="hidden items-center gap-4 md:flex">
+                  {isLoggedIn ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                          <Avatar
+                            className="h-8 w-8"
+                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(appName)}`}
+                            fallback={appName.substring(0, 2).toUpperCase()}
+                          />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuLabel className="font-normal">
+                          <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">Demo User</p>
+                            <p className="text-xs leading-none text-muted-foreground">
+                              user@example.com
+                            </p>
+                          </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Profile</DropdownMenuItem>
+                        <DropdownMenuItem>Settings</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                          Log out
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <>
+                      <Button variant="ghost" size="sm" onClick={() => setIsLoggedIn(true)}>
+                        Log in
+                      </Button>
+                      <Button size="sm" onClick={() => setIsLoggedIn(true)}>
+                        Sign up
+                      </Button>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="hidden md:block">
+                  <Button size="sm">Get Started</Button>
+                </div>
+              )}
+
+              {/* Mobile Menu Button (Visible only on mobile) */}
+              <button
+                className="justify-self-end md:hidden"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div className="absolute left-0 top-16 h-[calc(100vh-4rem)] w-full border-b border-border bg-background p-6 shadow-lg md:hidden">
+            <div className="flex flex-col gap-6">
+              <Link href="#" className="text-lg font-medium">
+                Product
+              </Link>
+              <Link href="#" className="text-lg font-medium">
+                Resources
+              </Link>
+              <Link href="#" className="text-lg font-medium">
+                Company
+              </Link>
+              <hr className="border-border" />
+              {enableAuth ? (
+                <>
+                  {isLoggedIn ? (
+                    <div className="flex items-center gap-4 px-2">
+                      <Avatar
+                        className="h-10 w-10"
+                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(appName)}`}
+                        fallback={appName.substring(0, 2).toUpperCase()}
+                      />
+                      <div className="flex flex-col">
+                        <span className="font-medium">Demo User</span>
+                        <span className="text-sm text-muted-foreground">user@example.com</span>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="h-auto p-0 text-muted-foreground"
+                          onClick={() => setIsLoggedIn(false)}
+                        >
+                          Log out
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-center"
+                        onClick={() => setIsLoggedIn(true)}
+                      >
+                        Log in
+                      </Button>
+                      <Button className="w-full justify-center" onClick={() => setIsLoggedIn(true)}>
+                        Sign up
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Button className="w-full">Get Started</Button>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-14">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-        <div className="mx-auto max-w-5xl px-6 pb-24 pt-2 sm:pb-32">
-          <div className="mx-auto max-w-2xl text-center">
-            <Logo className="mx-auto mb-1 h-96 w-96 animate-float object-contain" />
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-sm text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              AI App Template
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Skip the setup.
-              <span className="block text-primary">Build the future.</span>
+      {/* Main Content */}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden py-32 sm:py-48">
+          {/* Background Gradient */}
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+
+          <div className="mx-auto max-w-7xl px-6 text-center">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl">
+              Build with <span className="text-primary">speed</span>.
             </h1>
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              A production-ready template with Next.js, Go API, shared components, and type-safe API
-              client. Clone and start building.
+            <p className="mx-auto mt-8 max-w-2xl text-xl text-muted-foreground">
+              A clean, production-ready template designed for modern applications. Focus on your
+              product, not the boilerplate.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link href="/users">
-                <Button size="lg">View Demo</Button>
-              </Link>
-              <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-2 font-mono text-sm">
-                <span className="text-muted-foreground">$</span>
-                <code>bun run setup && bun run dev</code>
-              </div>
+            <div className="mt-10 flex items-center justify-center gap-4">
+              <Button size="lg" className="h-12 px-8 text-base">
+                Start Building
+              </Button>
+              <Button variant="outline" size="lg" className="h-12 px-8 text-base">
+                Learn More
+              </Button>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="border-t border-border bg-muted/30">
-        <div className="mx-auto max-w-5xl px-6 py-20">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <FeatureCard
-              icon={<Code2 className="h-5 w-5" />}
-              title="Next.js 14"
-              description="App Router, TypeScript, TailwindCSS"
-            />
-            <FeatureCard
-              icon={<Zap className="h-5 w-5" />}
-              title="Go Backend"
-              description="Chi router, SQLite, OpenAPI"
-            />
-            <FeatureCard
-              icon={<Blocks className="h-5 w-5" />}
-              title="Shared UI"
-              description="20+ components, forms, tables"
-            />
-            <FeatureCard
-              icon={<Sparkles className="h-5 w-5" />}
-              title="Type-Safe"
-              description="Generated API client from spec"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Structure */}
-      <section className="border-t border-border">
-        <div className="mx-auto max-w-5xl px-6 py-20">
-          <h2 className="mb-8 text-center text-2xl font-semibold">Project Structure</h2>
-          <div className="mx-auto max-w-md overflow-hidden rounded-xl border border-border bg-card">
-            <div className="border-b border-border bg-muted/50 px-4 py-3">
-              <div className="flex gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-red-400" />
-                <div className="h-3 w-3 rounded-full bg-yellow-400" />
-                <div className="h-3 w-3 rounded-full bg-green-400" />
-              </div>
-            </div>
-            <pre className="overflow-x-auto p-4 font-mono text-sm leading-relaxed text-muted-foreground">
-              {`keel/
-├── frontend/      → Next.js app
-├── backend/       → Go API
-└── packages/
-    ├── ui/        → Components
-    └── api-client → Generated types`}
-            </pre>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="border-t border-border bg-muted/30">
-        <div className="mx-auto max-w-5xl px-6 py-16 text-center">
-          <h2 className="text-2xl font-semibold">Ready to build?</h2>
-          <p className="mt-2 text-muted-foreground">
-            Check out the demo to see the patterns in action.
-          </p>
-          <div className="mt-6">
-            <Link href="/users">
-              <Button size="lg">View Users Demo</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-border">
-        <div className="mx-auto max-w-5xl px-6 py-8">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{appName} Template</span>
-            <span>MIT License</span>
-          </div>
+      <footer className="border-t border-border py-6">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} {appName}. All rights reserved.
+          </p>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="group rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-muted/50">
-      <div className="mb-3 inline-flex rounded-lg bg-primary/10 p-2 text-primary">{icon}</div>
-      <h3 className="font-semibold">{title}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
     </div>
   );
 }
