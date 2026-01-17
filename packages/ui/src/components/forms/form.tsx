@@ -5,15 +5,17 @@ import * as React from 'react';
 import {
   useForm,
   FormProvider,
-  type FieldValues,
+} from 'react-hook-form';
+
+import { cn } from '../../lib/utils';
+
+import type {
+  FieldValues,
   UseFormReturn,
   DefaultValues,
   SubmitHandler,
   Resolver,
 } from 'react-hook-form';
-
-import { cn } from '../../lib/utils';
-
 import type { ZodSchema } from 'zod';
 
 interface FormProps<T extends FieldValues> {
