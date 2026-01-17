@@ -24,10 +24,10 @@ type PaginatedResponse[T any] struct {
 
 // Common error codes
 const (
-	ErrCodeValidation  = "VALIDATION_ERROR"
-	ErrCodeNotFound    = "NOT_FOUND"
-	ErrCodeConflict    = "CONFLICT"
-	ErrCodeInternal    = "INTERNAL_ERROR"
-	ErrCodeBadRequest  = "BAD_REQUEST"
+	ErrCodeValidation   = "VALIDATION_ERROR"
+	ErrCodeNotFound     = "NOT_FOUND"
+	ErrCodeConflict     = "CONFLICT"
+	ErrCodeInternal     = "INTERNAL_ERROR"
+	ErrCodeBadRequest   = "BAD_REQUEST"
 	ErrCodeUnauthorized = "UNAUTHORIZED"
 )

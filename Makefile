@@ -65,7 +65,7 @@ build-web: ## Build Next.js
 lint: lint-api lint-web ## Lint all
 
 lint-api:
-	@cd backend && golangci-lint run ./...
+	@cd backend && $(HOME)/go/bin/golangci-lint run ./...
 
 lint-web:
 	@bun run lint

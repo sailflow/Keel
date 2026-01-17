@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -69,7 +70,9 @@ func main() {
 	// Routes
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":"ok"}`))
+		if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
+			slog.Error("failed to write health response", "error", err)
+		}
 	})
 
 	r.Route("/api", func(r chi.Router) {

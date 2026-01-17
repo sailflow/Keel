@@ -19,31 +19,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Lint
-        run: pnpm lint
+        run: bun run lint
 
       - name: Type check
-        run: pnpm typecheck
+        run: bun run typecheck
 
       - name: Test
-        run: pnpm test || true  # Tests optional for template
+        run: bun run test || true  # Tests optional for template
 
       - name: Build
-        run: pnpm build
+        run: bun --filter @keel/web build
 
   api:
     name: API (Go)
@@ -94,22 +88,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Generate API client
-        run: pnpm --filter @keel/api-client generate
+        run: bun --filter @keel/api-client run generate
 
       - name: Check for changes
         run: |
