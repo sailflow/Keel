@@ -9,34 +9,24 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/joho/godotenv"
+	"github.com/keel/api/internal/config"
+	"github.com/keel/api/internal/middleware"
 
 	_ "github.com/mattn/go-sqlite3"
-
-	"github.com/keel/api/internal/middleware"
 )
 
 func main() {
-	// Load environment variables
-	if err := godotenv.Load(); err != nil {
-		slog.Warn("No .env file found")
-	}
-
-	// Configuration
-	port := getEnv("PORT", "8080")
-	dbURL := getEnv("DATABASE_URL", "file:./data/keel.db?_foreign_keys=on")
-	appName := getEnv("APP_NAME", "Keel")
-	corsOrigins := getEnv("CORS_ORIGINS", "http://localhost:3000")
+	// Load configuration
+	cfg := config.Load()
 
 	// Database connection
-	db, err := sql.Open("sqlite3", dbURL)
+	db, err := sql.Open("sqlite3", cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -60,7 +50,7 @@ func main() {
 	r.Use(chimiddleware.RealIP)
 	r.Use(middleware.RequestID)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   strings.Split(corsOrigins, ","),
+		AllowedOrigins:   cfg.CorsOrigins,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Request-ID"},
 		ExposedHeaders:   []string{"X-Request-ID"},
@@ -74,7 +64,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		resp := map[string]string{
 			"status":   "ok",
-			"app_name": appName,
+			"app_name": cfg.AppName,
 		}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			slog.Error("failed to write health response", "error", err)
@@ -83,7 +73,7 @@ func main() {
 
 	// Server
 	srv := &http.Server{
-		Addr:         ":" + port,
+		Addr:         ":" + cfg.Port,
 		Handler:      r,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
@@ -92,7 +82,7 @@ func main() {
 
 	// Graceful shutdown
 	go func() {
-		log.Printf("Server starting on port %s", port)
+		log.Printf("Server starting on port %s", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server failed: %v", err)
 		}
@@ -112,13 +102,6 @@ func main() {
 	}
 
 	log.Println("Server exited")
-}
-
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
 }
 
 func runMigrations(db *sql.DB) error {

@@ -12,6 +12,7 @@
   "dependencies": {
     "@keel/api-client": "workspace:*",
     "@keel/ui": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.13.10",
     "geist": "^1.2.2",
     "lucide-react": "^0.309.0",
     "next": "16.1.3",

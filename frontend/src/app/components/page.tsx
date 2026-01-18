@@ -35,11 +35,13 @@ import { Info, Mail, Search, Settings, Bell, User, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { env } from '@/env';
+
 export default function ComponentsPage() {
   const { toast } = useToast();
   const [switchValue, setSwitchValue] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
-  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Keel';
+  const appName = env.NEXT_PUBLIC_APP_NAME;
 
   return (
     <TooltipProvider>
@@ -56,11 +58,6 @@ export default function ComponentsPage() {
               <Link href="/">
                 <Button variant="ghost" size="sm">
                   Home
-                </Button>
-              </Link>
-              <Link href="/users">
-                <Button variant="outline" size="sm">
-                  Demo
                 </Button>
               </Link>
             </div>

@@ -17,9 +17,11 @@ import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useState } from 'react';
 
+import { env } from '@/env';
+
 export default function HomePage() {
-  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Keel';
-  const enableAuth = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true';
+  const appName = env.NEXT_PUBLIC_APP_NAME;
+  const enableAuth = env.NEXT_PUBLIC_ENABLE_AUTH;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
   const isLoggedIn = !!session;
