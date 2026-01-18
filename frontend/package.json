@@ -2,6 +2,7 @@
   "name": "@keel/web",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@keel/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.0.9",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^19.2.3",
