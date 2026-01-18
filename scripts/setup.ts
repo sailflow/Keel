@@ -54,6 +54,12 @@ async function main() {
     frontendEnvContent = readFileSync(frontendEnvPath, 'utf-8');
   }
 
+  // Helper to remove env vars
+  const removeEnvVar = (content: string, key: string) => {
+    const regex = new RegExp(`^${key}=.*\n?`, 'm');
+    return content.replace(regex, '');
+  };
+
   if (enableAuth) {
     const providers = await multiselect({
       message: 'Select authentication providers:',
@@ -70,6 +76,25 @@ async function main() {
       process.exit(0);
     }
     configState.authProviders = providers as string[];
+
+    // Cleanup unselected providers
+    const allProviders = ['google', 'github', 'microsoft'];
+    for (const provider of allProviders) {
+      if (!configState.authProviders.includes(provider)) {
+        if (provider === 'google') {
+          frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GOOGLE_ID');
+          frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GOOGLE_SECRET');
+        }
+        if (provider === 'github') {
+          frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GITHUB_ID');
+          frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GITHUB_SECRET');
+        }
+        if (provider === 'microsoft') {
+          frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_MICROSOFT_ENTRA_ID_ID');
+          frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_MICROSOFT_ENTRA_ID_SECRET');
+        }
+      }
+    }
 
     // Prompt for secrets
     for (const provider of configState.authProviders) {
@@ -145,9 +170,20 @@ async function main() {
       }
     }
 
-    // Generate AUTH_SECRET
-    const authSecret = crypto.randomUUID();
-    frontendEnvContent = updateEnvVar(frontendEnvContent, 'AUTH_SECRET', authSecret);
+    // Generate AUTH_SECRET if strictly needed or missing (preserve existing if possible)
+    if (!frontendEnvContent.includes('AUTH_SECRET=')) {
+      const authSecret = crypto.randomUUID();
+      frontendEnvContent = updateEnvVar(frontendEnvContent, 'AUTH_SECRET', authSecret);
+    }
+  } else {
+    // If auth is disabled, remove all auth vars
+    frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GOOGLE_ID');
+    frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GOOGLE_SECRET');
+    frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GITHUB_ID');
+    frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GITHUB_SECRET');
+    frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_MICROSOFT_ENTRA_ID_ID');
+    frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_MICROSOFT_ENTRA_ID_SECRET');
+    // Keep AUTH_SECRET as it might be used for other things or just harmless, but removing providers is key.
   }
 
   // Update backend/.env

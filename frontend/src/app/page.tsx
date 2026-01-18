@@ -113,11 +113,7 @@ export default function HomePage() {
                     </>
                   )}
                 </div>
-              ) : (
-                <div className="hidden md:block">
-                  <Button size="sm">Get Started</Button>
-                </div>
-              )}
+              ) : null}
 
               {/* Mobile Menu Button (Visible only on mobile) */}
               <button
@@ -186,9 +182,7 @@ export default function HomePage() {
                     </div>
                   )}
                 </>
-              ) : (
-                <Button className="w-full">Get Started</Button>
-              )}
+              ) : null}
             </div>
           </div>
         )}
