@@ -12,6 +12,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+      time: "00:00"
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
     # Bun support is via npm ecosystem
 
