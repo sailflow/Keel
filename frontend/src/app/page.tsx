@@ -198,12 +198,16 @@ export default function HomePage() {
               product, not the boilerplate.
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
-              <Button size="lg" className="h-12 px-8 text-base">
-                Start Building
-              </Button>
-              <Button variant="outline" size="lg" className="h-12 px-8 text-base">
-                Learn More
-              </Button>
+              <Link href="#">
+                <Button size="lg" className="h-12 px-8 text-base">
+                  Start Building
+                </Button>
+              </Link>
+              <Link href="#">
+                <Button variant="outline" size="lg" className="h-12 px-8 text-base">
+                  Learn More
+                </Button>
+              </Link>
             </div>
           </div>
         </section>

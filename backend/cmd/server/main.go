@@ -19,12 +19,10 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/keel/api/internal/handler"
 	"github.com/keel/api/internal/middleware"
-	"github.com/keel/api/internal/repository"
-	"github.com/keel/api/internal/service"
 )
 
 //go:embed dist
@@ -58,15 +56,6 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	// Initialize repositories
-	userRepo := repository.NewUserRepository(db)
-
-	// Initialize services
-	userService := service.NewUserService(userRepo)
-
-	// Initialize handlers
-	userHandler := handler.NewUserHandler(userService)
-
 	// Router setup
 	r := chi.NewRouter()
 
@@ -95,16 +84,6 @@ func main() {
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			slog.Error("failed to write health response", "error", err)
 		}
-	})
-
-	r.Route("/api", func(r chi.Router) {
-		r.Route("/users", func(r chi.Router) {
-			r.Get("/", userHandler.List)
-			r.Post("/", userHandler.Create)
-			r.Get("/{id}", userHandler.Get)
-			r.Put("/{id}", userHandler.Update)
-			r.Delete("/{id}", userHandler.Delete)
-		})
 	})
 
 	// Serve static files
@@ -177,23 +156,6 @@ func getEnv(key, fallback string) string {
 }
 
 func runMigrations(db *sql.DB) error {
-	migrations := []string{
-		`CREATE TABLE IF NOT EXISTS users (
-			id TEXT PRIMARY KEY,
-			email TEXT UNIQUE NOT NULL,
-			name TEXT NOT NULL,
-			role TEXT NOT NULL DEFAULT 'user',
-			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-		)`,
-		`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`,
-	}
-
-	for _, m := range migrations {
-		if _, err := db.Exec(m); err != nil {
-			return err
-		}
-	}
-
+	// No migrations for the template initially
 	return nil
 }
