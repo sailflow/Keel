@@ -183,7 +183,12 @@ async function main() {
     frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_GITHUB_SECRET');
     frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_MICROSOFT_ENTRA_ID_ID');
     frontendEnvContent = removeEnvVar(frontendEnvContent, 'AUTH_MICROSOFT_ENTRA_ID_SECRET');
-    // Keep AUTH_SECRET as it might be used for other things or just harmless, but removing providers is key.
+
+    // Ensure AUTH_SECRET is present even if auth is disabled, as NextAuth/other libs might warn or crash without it
+    if (!frontendEnvContent.includes('AUTH_SECRET=')) {
+      const authSecret = crypto.randomUUID();
+      frontendEnvContent = updateEnvVar(frontendEnvContent, 'AUTH_SECRET', authSecret);
+    }
   }
 
   // Update backend/.env

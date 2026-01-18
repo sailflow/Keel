@@ -87,6 +87,11 @@ func run(ctx context.Context) error {
 	}))
 
 	// Routes
+	r.Route("/api", func(r chi.Router) {
+		// Routes here are already prefixed with /api
+		// e.g. r.Get("/users", ...) becomes /api/users
+	})
+
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

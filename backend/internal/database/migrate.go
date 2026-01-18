@@ -37,7 +37,12 @@ func RunMigrations(db *sql.DB, fs embed.FS, dir string) error {
 	sort.Strings(files)
 
 	for _, file := range files {
-		if err := applyMigration(db, fs, dir+"/"+file); err != nil {
+		// Clean the path before passing to applyMigration
+		path := dir + "/" + file
+		if dir == "." {
+			path = file
+		}
+		if err := applyMigration(db, fs, path); err != nil {
 			return fmt.Errorf("failed to apply migration %s: %w", file, err)
 		}
 	}
