@@ -21,6 +21,7 @@ A starter template for building AI-powered web applications. Clone this repo to 
     ```bash
     bun install
     bun run setup
+    bun run configure # Set up app name & authentication
     ```
 
 2.  **Start development server:**
@@ -50,6 +51,7 @@ keel/
 
 ```bash
 bun run setup       # Install Go tools (one-time)
+bun run configure   # Run setup wizard (app name, auth)
 bun run dev         # Start all (frontend + backend)
 bun run dev:web     # Frontend only
 bun run dev:api     # Backend only
