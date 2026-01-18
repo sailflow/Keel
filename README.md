@@ -1,5 +1,7 @@
 # Keel
 
+![Keel Ship](assets/keel-ship.png)
+
 A starter template for building AI-powered web applications. Clone this repo to skip the boilerplate and start building.
 
 ## What's Included
