@@ -5,6 +5,6 @@ import MicrosoftEntraId from 'next-auth/providers/microsoft-entra-id';
 
 const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [Google, GitHub, MicrosoftEntraId],
-});
+}) as any;
 
 export { handlers, auth, signIn, signOut };
