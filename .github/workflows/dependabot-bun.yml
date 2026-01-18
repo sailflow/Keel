@@ -32,7 +32,7 @@ jobs:
           if [[ -n $(git status --porcelain bun.lock) ]]; then
             echo "Lockfile updated, committing changes..."
             git add bun.lock
-            git commit -m "chore: update bun.lock"
+            git commit -m "chore: update bun.lock" --no-verify
             git push
           else
             echo "Lockfile is up to date."
