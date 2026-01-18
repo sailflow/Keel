@@ -1,15 +1,22 @@
+# Pruner stage - separate source from dependencies
+FROM oven/bun:latest AS pruner
+WORKDIR /app
+COPY . .
+RUN bunx turbo prune --scope=@keel/web --docker
+
 # Build stage for frontend
 FROM oven/bun:latest AS frontend-builder
 WORKDIR /app
-COPY frontend/package.json ./frontend/
-COPY packages/ ./packages/
-# Install dependencies for all workspaces
-COPY package.json bun.lock ./
+
+# Copy pruned lockfile and package.json's from pruner
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/bun.lock ./bun.lock
+
+# Install dependencies (this layer is cached until package.json changes)
 RUN bun install --frozen-lockfile
 
-# Copy source code
-COPY frontend/ ./frontend/
-COPY packages/ ./packages/
+# Copy source code from pruner
+COPY --from=pruner /app/out/full/ .
 
 # Build frontend
 WORKDIR /app/frontend

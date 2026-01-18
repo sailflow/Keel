@@ -1,0 +1,8 @@
+node_modules
+.git
+.next
+dist
+.turbo
+backend/server
+backend/tmp
+backend/vendor
