@@ -22,7 +22,7 @@
     "format:api": "cd backend && gofmt -w .",
     "check-api-sync": "cd packages/api-client && bun run generate && git diff --quiet --exit-code src/schema.d.ts || (echo 'API/Client out of sync! Run \"bun run generate\" in packages/api-client' && exit 1)",
     "typecheck": "turbo typecheck",
-    "test": "bun run test:web && bun run test:api",
+    "test": "turbo test test:api",
     "test:web": "turbo test",
     "test:api": "cd backend && go test -v ./...",
     "generate": "bun run generate:api",
