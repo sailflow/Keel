@@ -1,3 +1,4 @@
 bunx lint-staged
-bun run lint
+bun run lint:api
+bun run typecheck
 bun run check-api-sync
