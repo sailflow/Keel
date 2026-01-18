@@ -38,7 +38,10 @@ func TestHealthCheck(t *testing.T) {
 			"status":   "ok",
 			"app_name": cfg.AppName,
 		}
-		json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			// In a real handler we'd log this, but for test mock it's fine
+			return
+		}
 	})
 
 	srv := httptest.NewServer(r)

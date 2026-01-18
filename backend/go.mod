@@ -1,6 +1,8 @@
 module github.com/keel/api
 
-go 1.22
+go 1.24.0
+
+toolchain go1.24.12
 
 require (
 	github.com/go-chi/chi/v5 v5.2.4
@@ -10,3 +12,5 @@ require (
 )
 
 require github.com/joho/godotenv v1.5.1
+
+require golang.org/x/sync v0.19.0

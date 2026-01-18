@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"log"
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
@@ -19,37 +19,63 @@ import (
 	"github.com/keel/api/internal/database"
 	"github.com/keel/api/internal/middleware"
 	"github.com/keel/api/migrations"
-
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
+	// Setup structured logging
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	if os.Getenv("GO_ENV") == "production" {
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	}
+	slog.SetDefault(logger)
+
+	if err := run(context.Background()); err != nil {
+		slog.Error("application exited with error", "error", err)
+		os.Exit(1)
+	}
+}
+
+func run(ctx context.Context) error {
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer cancel()
+
 	// Load configuration
 	cfg := config.Load()
+	slog.Info("starting application", "app_name", cfg.AppName)
 
-	// Database connection
-	db, err := sql.Open("sqlite3", cfg.DatabaseURL)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			log.Printf("Error closing database: %v", err)
+	// Database connection (Optional)
+	var db *sql.DB
+	if cfg.DatabaseURL != "" {
+		slog.Info("connecting to database", "url", cfg.DatabaseURL)
+		var err error
+		db, err = sql.Open("sqlite3", cfg.DatabaseURL)
+		if err != nil {
+			return errors.New("failed to connect to database: " + err.Error())
 		}
-	}()
+		defer func() {
+			if err := db.Close(); err != nil {
+				slog.Error("error closing database", "error", err)
+			}
+		}()
 
-	// Run migrations
-	if err := runMigrations(db); err != nil {
-		log.Fatalf("Failed to run migrations: %v", err)
+		// Run migrations
+		if err := runMigrations(db); err != nil {
+			return errors.New("failed to run migrations: " + err.Error())
+		}
+	} else {
+		slog.Info("database url not set, skipping database connection")
 	}
 
 	// Router setup
 	r := chi.NewRouter()
 
 	// Global middleware
-	r.Use(chimiddleware.Logger)
-	r.Use(chimiddleware.Recoverer)
+	r.Use(chimiddleware.RequestID)
 	r.Use(chimiddleware.RealIP)
+	r.Use(chimiddleware.Logger) // Chi's default logger is okay, but we could wrap slog
+	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   cfg.CorsOrigins,
@@ -82,28 +108,33 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// Graceful shutdown
-	go func() {
-		log.Printf("Server starting on port %s", cfg.Port)
+	g, gCtx := errgroup.WithContext(ctx)
+
+	// Server goroutine
+	g.Go(func() error {
+		slog.Info("server starting", "port", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Server failed: %v", err)
+			return err
 		}
-	}()
+		return nil
+	})
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+	// Shutdown goroutine
+	g.Go(func() error {
+		<-gCtx.Done()
+		slog.Info("server shutting down")
 
-	log.Println("Server shutting down...")
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer shutdownCancel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
+		if err := srv.Shutdown(shutdownCtx); err != nil {
+			return errors.New("server forced to shutdown: " + err.Error())
+		}
+		return nil
+	})
 
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Server forced to shutdown: %v", err)
-	}
-
-	log.Println("Server exited")
+	slog.Info("application ready")
+	return g.Wait()
 }
 
 func runMigrations(db *sql.DB) error {
