@@ -1,0 +1,50 @@
+# Keel Repository Rules
+
+You are an expert software engineer working on `keel`, a cloud-native starter template designed for AI-assisted development.
+This project adheres to **CNCF (Cloud Native Computing Foundation)** best practices.
+
+## Project Structure
+- **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS.
+- **Backend**: Go 1.22+, Chi Router, SQLite.
+- **Infrastructure**: Docker, Turbolib (Monorepo).
+
+## Cloud Native Standards
+
+### 12-Factor App Principles
+- **Configuration**: strict separation of config from code. All config MUST come from environment variables.
+- **Backing Services**: Treat databases and external services as attached resources.
+- **Logs**: Treat logs as event streams. Do not manage log files; write to `stdout`/`stderr`.
+- **Disposability**: Fast startup and graceful shutdown.
+
+### Observability
+- **Logging**: Use structured logging (JSON in production, text in dev) via `log/slog`.
+  - ALWAYS include context: `slog.Error("msg", "key", value)`.
+- **Metrics**: Design for eventual Prometheus scraping.
+- **Tracing**: Prepare for OpenTelemetry integration. Propagate `context.Context` everywhere.
+
+### API Design
+- **Standard**: Follow RESTful principles.
+- **Spec**: OpenAPI 3.0 is the source of truth. Update `backend/api/openapi.yaml` first.
+- **Errors**: Return structured details (Problem Details for HTTP APIs - RFC 7807).
+
+## Coding Standards
+
+### Backend (Go)
+- **Style**: strictly follow `gofmt` and `golangci-lint`.
+- **Context**: Pass `context.Context` as the first argument to every function that performs I/O.
+- **Error Handling**: Wrap errors with context: `fmt.Errorf("failed to do X: %w", err)`.
+- **Concurrency**: Use Channels and Goroutines with `errgroup` for synchronization. Avoid naked `go func`.
+
+### Frontend (Next.js)
+- **Performance**: Optimize for Core Web Vitals (LCP, CLS, FID).
+- **Accessibility**: WCAG 2.1 AA compliance. Use semantic HTML and ARIA attributes (Radix UI helps here).
+- **State**: Prefer server-side rendering (SSR) or React Server Components (RSC) to reduce client bundle size.
+
+## Security
+- **Inputs**: Validate ALL inputs. Use `zod` on frontend and strong typing/validation middleware on backend.
+- **Dependencies**: Minimize external dependencies to reduce attack surface (Supply Chain Security).
+- **Secrets**: NEVER commit secrets. Use placeholders in `.env.example`.
+
+## Workflows
+- **Commit Messages**: Conventional Commits (e.g., `feat: add health check`, `fix: logic error`).
+- **CI/CD**: Build once, deploy anywhere (Container images).

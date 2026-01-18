@@ -16,7 +16,9 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/keel/api/internal/config"
+	"github.com/keel/api/internal/database"
 	"github.com/keel/api/internal/middleware"
+	"github.com/keel/api/migrations"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -105,6 +107,5 @@ func main() {
 }
 
 func runMigrations(db *sql.DB) error {
-	// No migrations for the template initially
-	return nil
+	return database.RunMigrations(db, migrations.FS, ".")
 }
