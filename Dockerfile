@@ -13,7 +13,7 @@ COPY packages/ ./packages/
 
 # Build frontend
 WORKDIR /app/frontend
-# Next.js export will output to 'out' directory
+ENV NEXT_PUBLIC_API_URL=http://localhost:8080
 RUN bun run build
 
 # Build stage for Go backend
@@ -22,9 +22,6 @@ WORKDIR /app
 COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 COPY backend/ ./backend/
-# Copy built frontend assets to the expected location for embedding
-# main.go expects "dist", but Next.js "export" outputs to "out"
-COPY --from=frontend-builder /app/frontend/out ./backend/cmd/server/dist
 
 WORKDIR /app/backend
 # Build static binary
@@ -32,21 +29,33 @@ ENV CGO_ENABLED=1
 RUN apk add --no-cache build-base
 RUN go build -ldflags="-w -s" -trimpath -o server ./cmd/server
 
-# Final stage - distroless
-FROM alpine:latest
+# Final stage - Node.js Alpine for Next.js Standalone + Go Binary
+FROM node:20-alpine
 WORKDIR /app
+
+# Install dependencies
 RUN apk add --no-cache sqlite ca-certificates
 
-# Copy binary
+# Copy Go binary
 COPY --from=backend-builder /app/backend/server /app/server
+
+# Copy Next.js standalone build
+COPY --from=frontend-builder /app/frontend/.next/standalone /app/frontend
+COPY --from=frontend-builder /app/frontend/.next/static /app/frontend/.next/static
+COPY --from=frontend-builder /app/frontend/public /app/frontend/public
+
 # Create data directory for SQLite
 RUN mkdir -p /app/data
 
+# Copy start script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Environment variables
-ENV PORT=8080
+ENV PORT=3000
 ENV DATABASE_URL="file:/app/data/keel.db?_foreign_keys=on"
 
-EXPOSE 8080
+EXPOSE 3000 8080
 VOLUME ["/app/data"]
 
-ENTRYPOINT ["/app/server"]
+ENTRYPOINT ["/app/start.sh"]
