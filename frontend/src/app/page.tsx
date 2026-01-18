@@ -14,13 +14,15 @@ import {
 } from '@keel/ui';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import { useState } from 'react';
 
 export default function HomePage() {
   const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Keel';
   const enableAuth = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { data: session } = useSession();
+  const isLoggedIn = !!session;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -72,17 +74,22 @@ export default function HomePage() {
                         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                           <Avatar
                             className="h-8 w-8"
-                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(appName)}`}
-                            fallback={appName.substring(0, 2).toUpperCase()}
+                            src={
+                              session?.user?.image ||
+                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(appName)}`
+                            }
+                            fallback={session?.user?.name?.substring(0, 2).toUpperCase() || 'U'}
                           />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="w-56" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                           <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">Demo User</p>
+                            <p className="text-sm font-medium leading-none">
+                              {session?.user?.name || 'User'}
+                            </p>
                             <p className="text-xs leading-none text-muted-foreground">
-                              user@example.com
+                              {session?.user?.email || 'user@example.com'}
                             </p>
                           </div>
                         </DropdownMenuLabel>
@@ -90,17 +97,15 @@ export default function HomePage() {
                         <DropdownMenuItem>Profile</DropdownMenuItem>
                         <DropdownMenuItem>Settings</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
-                          Log out
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
                     <>
-                      <Button variant="ghost" size="sm" onClick={() => setIsLoggedIn(true)}>
+                      <Button variant="ghost" size="sm" onClick={() => signIn()}>
                         Log in
                       </Button>
-                      <Button size="sm" onClick={() => setIsLoggedIn(true)}>
+                      <Button size="sm" onClick={() => signIn()}>
                         Sign up
                       </Button>
                     </>
@@ -143,17 +148,22 @@ export default function HomePage() {
                     <div className="flex items-center gap-4 px-2">
                       <Avatar
                         className="h-10 w-10"
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(appName)}`}
-                        fallback={appName.substring(0, 2).toUpperCase()}
+                        src={
+                          session?.user?.image ||
+                          `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(appName)}`
+                        }
+                        fallback={session?.user?.name?.substring(0, 2).toUpperCase() || 'U'}
                       />
                       <div className="flex flex-col">
-                        <span className="font-medium">Demo User</span>
-                        <span className="text-sm text-muted-foreground">user@example.com</span>
+                        <span className="font-medium">{session?.user?.name || 'User'}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {session?.user?.email || 'user@example.com'}
+                        </span>
                         <Button
                           variant="link"
                           size="sm"
                           className="h-auto p-0 text-muted-foreground"
-                          onClick={() => setIsLoggedIn(false)}
+                          onClick={() => signOut()}
                         >
                           Log out
                         </Button>
@@ -164,11 +174,11 @@ export default function HomePage() {
                       <Button
                         variant="outline"
                         className="w-full justify-center"
-                        onClick={() => setIsLoggedIn(true)}
+                        onClick={() => signIn()}
                       >
                         Log in
                       </Button>
-                      <Button className="w-full justify-center" onClick={() => setIsLoggedIn(true)}>
+                      <Button className="w-full justify-center" onClick={() => signIn()}>
                         Sign up
                       </Button>
                     </div>

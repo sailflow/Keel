@@ -1,4 +1,4 @@
-import { intro, outro, text, confirm, isCancel, cancel } from '@clack/prompts';
+import { intro, outro, text, confirm, isCancel, cancel, multiselect } from '@clack/prompts';
 import { join } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
@@ -7,6 +7,7 @@ async function main() {
 
   const configState = {
     appName: 'Keel',
+    authProviders: [] as string[],
   };
 
   // 1. App Name Configuration
@@ -46,6 +47,109 @@ async function main() {
     }
   };
 
+  // Load frontend env content early
+  const frontendEnvPath = join(process.cwd(), 'frontend', '.env.local');
+  let frontendEnvContent = '';
+  if (existsSync(frontendEnvPath)) {
+    frontendEnvContent = readFileSync(frontendEnvPath, 'utf-8');
+  }
+
+  if (enableAuth) {
+    const providers = await multiselect({
+      message: 'Select authentication providers:',
+      options: [
+        { value: 'google', label: 'Google' },
+        { value: 'github', label: 'GitHub' },
+        { value: 'microsoft', label: 'Microsoft' },
+      ],
+      required: false,
+    });
+
+    if (isCancel(providers)) {
+      cancel('Operation cancelled.');
+      process.exit(0);
+    }
+    configState.authProviders = providers as string[];
+
+    // Prompt for secrets
+    for (const provider of configState.authProviders) {
+      if (provider === 'google') {
+        const clientId = await text({ message: 'Enter Google Client ID:', placeholder: '...' });
+        if (isCancel(clientId)) {
+          cancel('Operation cancelled.');
+          process.exit(0);
+        }
+        frontendEnvContent = updateEnvVar(frontendEnvContent, 'AUTH_GOOGLE_ID', clientId as string);
+
+        const clientSecret = await text({
+          message: 'Enter Google Client Secret:',
+          placeholder: '...',
+        });
+        if (isCancel(clientSecret)) {
+          cancel('Operation cancelled.');
+          process.exit(0);
+        }
+        frontendEnvContent = updateEnvVar(
+          frontendEnvContent,
+          'AUTH_GOOGLE_SECRET',
+          clientSecret as string
+        );
+      }
+      if (provider === 'github') {
+        const clientId = await text({ message: 'Enter GitHub Client ID:', placeholder: '...' });
+        if (isCancel(clientId)) {
+          cancel('Operation cancelled.');
+          process.exit(0);
+        }
+        frontendEnvContent = updateEnvVar(frontendEnvContent, 'AUTH_GITHUB_ID', clientId as string);
+
+        const clientSecret = await text({
+          message: 'Enter GitHub Client Secret:',
+          placeholder: '...',
+        });
+        if (isCancel(clientSecret)) {
+          cancel('Operation cancelled.');
+          process.exit(0);
+        }
+        frontendEnvContent = updateEnvVar(
+          frontendEnvContent,
+          'AUTH_GITHUB_SECRET',
+          clientSecret as string
+        );
+      }
+      if (provider === 'microsoft') {
+        const clientId = await text({ message: 'Enter Microsoft Client ID:', placeholder: '...' });
+        if (isCancel(clientId)) {
+          cancel('Operation cancelled.');
+          process.exit(0);
+        }
+        frontendEnvContent = updateEnvVar(
+          frontendEnvContent,
+          'AUTH_MICROSOFT_ENTRA_ID_ID',
+          clientId as string
+        );
+
+        const clientSecret = await text({
+          message: 'Enter Microsoft Client Secret:',
+          placeholder: '...',
+        });
+        if (isCancel(clientSecret)) {
+          cancel('Operation cancelled.');
+          process.exit(0);
+        }
+        frontendEnvContent = updateEnvVar(
+          frontendEnvContent,
+          'AUTH_MICROSOFT_ENTRA_ID_SECRET',
+          clientSecret as string
+        );
+      }
+    }
+
+    // Generate AUTH_SECRET
+    const authSecret = crypto.randomUUID();
+    frontendEnvContent = updateEnvVar(frontendEnvContent, 'AUTH_SECRET', authSecret);
+  }
+
   // Update backend/.env
   const backendEnvPath = join(process.cwd(), 'backend', '.env');
   let backendEnvContent = '';
@@ -57,13 +161,7 @@ async function main() {
   writeFileSync(backendEnvPath, backendEnvContent.trim() + '\n');
   console.log('Updated backend/.env');
 
-  // Update frontend/.env.local
-  const frontendEnvPath = join(process.cwd(), 'frontend', '.env.local');
-  let frontendEnvContent = '';
-  if (existsSync(frontendEnvPath)) {
-    frontendEnvContent = readFileSync(frontendEnvPath, 'utf-8');
-  }
-
+  // Update frontend/.env.local - Write accumulated changes
   frontendEnvContent = updateEnvVar(
     frontendEnvContent,
     'NEXT_PUBLIC_APP_NAME',
@@ -73,6 +171,11 @@ async function main() {
     frontendEnvContent,
     'NEXT_PUBLIC_ENABLE_AUTH',
     String(enableAuth)
+  );
+  frontendEnvContent = updateEnvVar(
+    frontendEnvContent,
+    'NEXT_PUBLIC_AUTH_PROVIDERS',
+    configState.authProviders.join(',')
   );
   writeFileSync(frontendEnvPath, frontendEnvContent.trim() + '\n');
   console.log('Updated frontend/.env.local');

@@ -3,6 +3,8 @@ import '@keel/ui/globals.css';
 import { GeistMono } from 'geist/font/mono'; // eslint-disable-line import/no-unresolved
 import { GeistSans } from 'geist/font/sans'; // eslint-disable-line import/no-unresolved
 
+import { Providers } from './providers';
+
 import './globals.css';
 
 import type { Metadata } from 'next';
@@ -20,15 +22,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background font-sans antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
