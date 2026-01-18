@@ -38,6 +38,8 @@ jobs:
 
       - name: Build
         run: bun --filter @keel/web build
+        env:
+          SKIP_ENV_VALIDATION: 1
 
   api:
     name: API (Go)

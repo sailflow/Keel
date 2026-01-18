@@ -14,6 +14,7 @@ COPY packages/ ./packages/
 # Build frontend
 WORKDIR /app/frontend
 ENV NEXT_PUBLIC_API_URL=http://localhost:8080
+ENV SKIP_ENV_VALIDATION=1
 RUN bun run build
 
 # Build stage for Go backend
