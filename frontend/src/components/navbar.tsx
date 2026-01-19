@@ -27,7 +27,7 @@ export function Navbar() {
   const isLoggedIn = !!session;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-border/40 bg-muted/50 backdrop-blur-md">
       <div className="flex h-16 w-full items-center px-6 md:px-12">
         {/* Grid Layout for Perfect Centering */}
         <div className="grid w-full grid-cols-2 items-center md:grid-cols-3">
@@ -41,24 +41,7 @@ export function Navbar() {
 
           {/* Center: Desktop Nav Links */}
           <div className="hidden justify-center gap-8 md:flex">
-            <Link
-              href="#"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Product
-            </Link>
-            <Link
-              href="#"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Resources
-            </Link>
-            <Link
-              href="#"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Company
-            </Link>
+            <NavItems />
           </div>
 
           {/* Right: Actions */}
@@ -128,15 +111,7 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="absolute left-0 top-16 h-[calc(100vh-4rem)] w-full border-b border-border bg-background p-6 shadow-lg md:hidden">
           <div className="flex flex-col gap-6">
-            <Link href="#" className="text-lg font-medium">
-              Product
-            </Link>
-            <Link href="#" className="text-lg font-medium">
-              Resources
-            </Link>
-            <Link href="#" className="text-lg font-medium">
-              Company
-            </Link>
+            <NavItems mobile />
             <hr className="border-border" />
             {enableAuth ? (
               <>
@@ -185,5 +160,26 @@ export function Navbar() {
         </div>
       )}
     </nav>
+  );
+}
+
+function NavItems({ mobile: _mobile = false }: { mobile?: boolean }) {
+  return (
+    <>
+      {/* 
+        Add your navigation links here.
+        Example:
+        <Link 
+          href="/dashboard" 
+          className={
+            mobile 
+              ? "text-lg font-medium" 
+              : "text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+          }
+        >
+          Dashboard
+        </Link>
+      */}
+    </>
   );
 }
