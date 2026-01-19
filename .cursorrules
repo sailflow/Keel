@@ -47,4 +47,5 @@ This project adheres to **CNCF (Cloud Native Computing Foundation)** best practi
 
 ## Workflows
 - **Commit Messages**: Conventional Commits (e.g., `feat: add health check`, `fix: logic error`).
+- **Committing**: Commit code after EVERY major change or successful verification step. Do not accumulate large uncommitted changes.
 - **CI/CD**: Build once, deploy anywhere (Container images).
