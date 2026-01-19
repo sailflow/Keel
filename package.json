@@ -8,9 +8,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n \"WEB,API\" -c \"bgBlue.bold,bgMagenta.bold\" \"bun run dev:web\" \"bun run dev:api\"",
+    "dev": "concurrently -n \"WEB,API,GEN\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"bun run dev:web\" \"bun run dev:api\" \"bun run dev:gen\"",
     "dev:web": "turbo dev --filter @keel/web",
     "dev:api": "cd backend && ~/go/bin/air",
+    "dev:gen": "bun run generate:api:watch",
     "build": "bun run build:web && bun run build:api",
     "build:web": "turbo build --filter @keel/web",
     "build:api": "cd backend && go build -o bin/server ./cmd/server",
@@ -27,6 +28,7 @@
     "test:api": "cd backend && go test -v ./...",
     "generate": "bun run generate:api",
     "generate:api": "cd packages/api-client && bun run generate",
+    "generate:api:watch": "cd packages/api-client && bun run generate:watch",
     "db:reset": "rm -f backend/data/keel.db && echo 'Database reset'",
     "setup": "go install github.com/air-verse/air@latest && go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest",
     "clean": "turbo clean && rm -rf node_modules frontend/.next frontend/node_modules backend/bin backend/tmp packages/*/node_modules packages/*/dist",

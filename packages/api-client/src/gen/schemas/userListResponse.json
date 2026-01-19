@@ -1,0 +1,42 @@
+{
+  "type": "object",
+  "required": ["data", "pagination"],
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "email", "name", "role", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Unique identifier" },
+          "email": { "type": "string", "format": "email", "description": "User email address" },
+          "name": { "type": "string", "description": "User full name" },
+          "role": { "type": "string", "enum": ["admin", "user"], "description": "User role" },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        },
+        "x-readme-ref-name": "User"
+      }
+    },
+    "pagination": {
+      "type": "object",
+      "required": ["page", "limit", "total", "totalPages"],
+      "properties": {
+        "page": { "type": "integer", "description": "Current page number" },
+        "limit": { "type": "integer", "description": "Items per page" },
+        "total": { "type": "integer", "description": "Total number of items" },
+        "totalPages": { "type": "integer", "description": "Total number of pages" }
+      },
+      "x-readme-ref-name": "Pagination"
+    }
+  },
+  "x-readme-ref-name": "UserListResponse"
+}

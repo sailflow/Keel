@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "required": ["code", "message", "requestId"],
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Error code",
+      "enum": [
+        "VALIDATION_ERROR",
+        "NOT_FOUND",
+        "CONFLICT",
+        "INTERNAL_ERROR",
+        "BAD_REQUEST",
+        "UNAUTHORIZED"
+      ]
+    },
+    "message": { "type": "string", "description": "Human-readable error message" },
+    "details": { "description": "Additional error details" },
+    "requestId": { "type": "string", "description": "Request ID for tracking" }
+  },
+  "x-readme-ref-name": "APIError"
+}

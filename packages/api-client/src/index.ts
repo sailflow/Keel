@@ -1,4 +1,3 @@
 export { createApiClient } from './client';
-export type { ApiClient, ApiClientConfig } from './client';
-export type { paths, components, operations } from './schema';
-export * from './types';
+export type { ApiClientConfig } from './client';
+export * from './gen/index';
