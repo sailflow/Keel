@@ -192,7 +192,11 @@ func (h *{{.PascalName}}Handler) Get(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("Error creating file %s: %v\n", f.Path, err)
 			continue
 		}
-		defer file.Close()
+		defer func() {
+			if err := file.Close(); err != nil {
+				fmt.Printf("Error closing file %s: %v\n", f.Path, err)
+			}
+		}()
 
 		if err := tmpl.Execute(file, data); err != nil {
 			fmt.Printf("Error executing template for %s: %v\n", f.Path, err)
