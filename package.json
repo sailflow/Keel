@@ -35,7 +35,8 @@
     "docker:web": "docker build --target web -t keel-web .",
     "docker:api": "docker build --target api -t keel-api .",
     "prepare": "husky",
-    "configure": "bun run scripts/setup.ts"
+    "configure": "bun run scripts/setup.ts",
+    "clean-examples": "bun run scripts/clean-examples.ts"
   },
   "devDependencies": {
     "@clack/prompts": "^0.11.0",
@@ -57,7 +58,11 @@
     "turbo": "^2.0.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
+    "frontend/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "packages/**/*.{ts,tsx,js,jsx}": [
       "prettier --write",
       "eslint --fix"
     ],

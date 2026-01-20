@@ -3,6 +3,49 @@
 You are an expert software engineer working on `keel`, a cloud-native starter template designed for AI-assisted development.
 This project adheres to **CNCF (Cloud Native Computing Foundation)** best practices.
 
+## Getting Started (IMPORTANT - Read First!)
+
+This template includes working **example code** (Users/Items CRUD) that demonstrates the patterns. When building a new app:
+
+### Quick Start: Run the cleanup script first!
+```bash
+bun run clean-examples
+```
+This removes all example boilerplate and gives you a clean starting point.
+
+### Then follow these steps:
+1. **Edit OpenAPI spec first** (`backend/api/openapi.yaml`)
+   - Remove `/api/users` and `/api/items` endpoints
+   - Add YOUR app's endpoints (keep `/health`)
+2. **Replace migrations** (`backend/migrations/`)
+   - Delete `001_init.sql` and `002_items.sql`
+   - Create new migration(s) for YOUR schema
+3. **Replace sqlc queries** (`backend/query/`)
+   - Delete `users.sql` and `items.sql`
+   - Add YOUR queries following the same patterns
+4. **Run `cd backend && sqlc generate`** to regenerate store code
+5. **Replace service layer** (`backend/internal/service/`)
+   - Delete `user_service.go` and `item_service.go`
+   - Create YOUR services following the same patterns
+6. **Replace handlers** (`backend/internal/handler/`)
+   - Delete `user_handler.go` and `item_handler.go`
+   - Create YOUR handlers following the same patterns
+7. **Update `main.go`** - Wire YOUR handlers instead of user/item handlers
+
+### Step 2: Regenerate API Client
+Run: `bun run generate:api`
+
+### Step 3: Replace Frontend Examples
+1. **Delete** `frontend/src/app/users/` folder
+2. **Create** YOUR pages using the generated hooks from `@keel/api-client`
+3. **Follow the pattern**: Use `dynamic()` with `ssr: false` for pages with React Query hooks
+
+### Key Patterns to Follow
+- **OpenAPI-first**: Always edit `openapi.yaml` BEFORE writing Go code
+- **Layered Architecture**: Handler → Service → Store (never skip layers)
+- **Generated Types**: Use sqlc for Go, Kubb-generated hooks for TypeScript
+- **Error Handling**: Use `apierror` package for consistent RFC 7807 errors
+
 ## Project Structure
 - **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS.
 - **Backend**: Go 1.22+, Chi Router, SQLite.
