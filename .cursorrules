@@ -45,6 +45,10 @@ Run: `bun run generate:api`
 - **Layered Architecture**: Handler → Service → Store (never skip layers)
 - **Generated Types**: Use sqlc for Go, Kubb-generated hooks for TypeScript
 - **Error Handling**: Use `apierror` package for consistent RFC 7807 errors
+- **UI Components**: ALWAYS check `@sailflow/planks` first.
+  - If missing, build in `frontend/src/components/local/<PascalCase>.tsx`.
+  - Follow Planks style (Radix/Tailwind).
+  - INSTRUCT user to run `bun run submit-component <Name>` to contribute.
 
 ## Project Structure
 - **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS, @sailflow/planks (UI).

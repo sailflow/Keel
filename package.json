@@ -36,7 +36,8 @@
     "docker:api": "docker build --target api -t keel-api .",
     "prepare": "husky",
     "configure": "bun run scripts/setup.ts",
-    "clean-examples": "bun run scripts/clean-examples.ts"
+    "clean-examples": "bun run scripts/clean-examples.ts",
+    "submit-component": "bun run scripts/submit-component.ts"
   },
   "devDependencies": {
     "@clack/prompts": "^0.11.0",
