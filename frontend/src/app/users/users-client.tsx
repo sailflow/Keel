@@ -15,7 +15,7 @@ import {
   Input,
   Label,
   Skeleton,
-} from '@keel/ui';
+} from '@sailflow/planks';
 import { useState } from 'react';
 
 export default function UsersPage() {

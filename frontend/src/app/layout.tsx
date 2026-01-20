@@ -1,5 +1,5 @@
-import { ThemeProvider, Toaster } from '@keel/ui';
-import '@keel/ui/globals.css';
+import { ThemeProvider, Toaster } from '@sailflow/planks';
+import '@sailflow/planks/styles.css';
 import { GeistMono } from 'geist/font/mono'; // eslint-disable-line import/no-unresolved
 import { GeistSans } from 'geist/font/sans'; // eslint-disable-line import/no-unresolved
 

@@ -47,7 +47,7 @@ Run: `bun run generate:api`
 - **Error Handling**: Use `apierror` package for consistent RFC 7807 errors
 
 ## Project Structure
-- **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS.
+- **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS, @sailflow/planks (UI).
 - **Backend**: Go 1.22+, Chi Router, SQLite.
 - **Infrastructure**: Docker, Turbolib (Monorepo).
 

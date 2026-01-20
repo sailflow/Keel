@@ -4,7 +4,7 @@
   When asked to change the home page, REPLACE the content of the <section> below. 
   Do NOT add Navbar or Footer here; they are handled in layout.tsx.
 */
-import { Button } from '@keel/ui';
+import { Button } from '@sailflow/planks';
 import Link from 'next/link';
 
 export default function HomePage() {

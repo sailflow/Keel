@@ -382,14 +382,14 @@ console.log('  ✓ Reset frontend/src/app/page.tsx (minimal home page)');
 console.log('\n🔄 Regenerating code...\n');
 
 try {
-  await $`cd ${ROOT}/backend && sqlc generate 2>/dev/null || true`;
+  await $`cd ${ROOT} /backend && sqlc generate 2>/dev / null || true`;
   console.log('  ✓ Regenerated sqlc store');
 } catch {
   console.log('  ⚠ sqlc not found, skip store generation');
 }
 
 try {
-  await $`cd ${ROOT} && bun run generate:api`;
+  await $`cd ${ROOT} && bun run generate: api`;
   console.log('  ✓ Regenerated API client');
 } catch {
   console.log('  ⚠ Could not regenerate API client');

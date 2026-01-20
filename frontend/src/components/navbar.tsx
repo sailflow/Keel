@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Avatar,
-} from '@keel/ui';
+} from '@sailflow/planks';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
