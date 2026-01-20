@@ -62,3 +62,4 @@ docker/data/
 # Backend
 backend/bin/
 backend/tmp/
+backend/server
