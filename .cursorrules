@@ -39,6 +39,8 @@ This project adheres to **CNCF (Cloud Native Computing Foundation)** best practi
 - **Performance**: Optimize for Core Web Vitals (LCP, CLS, FID).
 - **Accessibility**: WCAG 2.1 AA compliance. Use semantic HTML and ARIA attributes (Radix UI helps here).
 - **State**: Prefer server-side rendering (SSR) or React Server Components (RSC) to reduce client bundle size.
+- **Layout Persistence**: The `Navbar` and `Footer` are defined in `src/app/layout.tsx` and MUST persist across all pages. Do NOT add headers or footers to individual page files unless explicitly requested.
+- **Home Page**: The main entry point is `src/app/page.tsx`. When asked to "build" or "create" a home page, ALWAYS overwrite the content of this file. Do NOT create new routes or modify `layout.tsx` for content changes.
 
 ## Security
 - **Inputs**: Validate ALL inputs. Use `zod` on frontend and strong typing/validation middleware on backend.

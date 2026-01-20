@@ -3,6 +3,8 @@ import '@keel/ui/globals.css';
 import { GeistMono } from 'geist/font/mono'; // eslint-disable-line import/no-unresolved
 import { GeistSans } from 'geist/font/sans'; // eslint-disable-line import/no-unresolved
 
+import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
 import { env } from '@/env';
 
 import { Providers } from './providers';
@@ -23,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className="flex min-h-screen flex-col bg-background font-sans antialiased">
         <Providers>
           <ThemeProvider
             attribute="class"
@@ -31,7 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
             <Toaster />
           </ThemeProvider>
         </Providers>
