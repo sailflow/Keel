@@ -8,13 +8,26 @@ import (
 	"database/sql"
 )
 
+type Item struct {
+	ID          string         `json:"id"`
+	UserID      string         `json:"user_id"`
+	Title       string         `json:"title"`
+	Description sql.NullString `json:"description"`
+	Status      string         `json:"status"`
+	CreatedAt   sql.NullTime   `json:"created_at"`
+	UpdatedAt   sql.NullTime   `json:"updated_at"`
+}
+
 type SchemaMigration struct {
 	Version   int64        `json:"version"`
 	AppliedAt sql.NullTime `json:"applied_at"`
 }
 
 type User struct {
-	ID        int64        `json:"id"`
+	ID        string       `json:"id"`
 	Email     string       `json:"email"`
+	Name      string       `json:"name"`
+	Role      string       `json:"role"`
 	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
 }

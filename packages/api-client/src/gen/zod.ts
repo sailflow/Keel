@@ -42,6 +42,40 @@ export const userListResponseSchema = z.object({
   },
 });
 
+export const itemSchema = z.object({
+  id: z.uuid().describe('Unique identifier'),
+  userId: z.uuid().describe('Owner user ID'),
+  title: z.string().describe('Item title'),
+  description: z.optional(z.string().describe('Item description')),
+  status: z.enum(['pending', 'in_progress', 'completed']).describe('Item status'),
+  createdAt: z.iso.datetime().describe('Creation timestamp'),
+  updatedAt: z.iso.datetime().describe('Last update timestamp'),
+});
+
+export const createItemRequestSchema = z.object({
+  userId: z.uuid().describe('Owner user ID'),
+  title: z.string().min(1).describe('Item title'),
+  description: z.optional(z.string().describe('Item description')),
+  status: z.optional(
+    z.enum(['pending', 'in_progress', 'completed']).default('pending').describe('Item status')
+  ),
+});
+
+export const updateItemRequestSchema = z.object({
+  title: z.optional(z.string().min(1).describe('Item title')),
+  description: z.optional(z.string().describe('Item description')),
+  status: z.optional(z.enum(['pending', 'in_progress', 'completed']).describe('Item status')),
+});
+
+export const itemListResponseSchema = z.object({
+  get data() {
+    return z.array(itemSchema);
+  },
+  get pagination() {
+    return paginationSchema;
+  },
+});
+
 export const APIErrorSchema = z.object({
   code: z
     .enum([
@@ -185,3 +219,110 @@ export const deleteUser404Schema = z.lazy(() => APIErrorSchema);
 export const deleteUser500Schema = z.lazy(() => APIErrorSchema);
 
 export const deleteUserMutationResponseSchema = z.lazy(() => deleteUser204Schema);
+
+export const listItemsQueryParamsSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1).describe('Page number (1-indexed)'),
+  limit: z.coerce.number().int().min(1).max(100).default(10).describe('Number of items per page'),
+  userId: z.optional(z.uuid().describe('Filter by user ID')),
+});
+
+/**
+ * @description List of items
+ */
+export const listItems200Schema = z.lazy(() => itemListResponseSchema);
+
+/**
+ * @description Internal server error
+ */
+export const listItems500Schema = z.lazy(() => APIErrorSchema);
+
+export const listItemsQueryResponseSchema = z.lazy(() => listItems200Schema);
+
+/**
+ * @description Item created successfully
+ */
+export const createItem201Schema = z.lazy(() => itemSchema);
+
+/**
+ * @description Bad request
+ */
+export const createItem400Schema = z.lazy(() => APIErrorSchema);
+
+/**
+ * @description Internal server error
+ */
+export const createItem500Schema = z.lazy(() => APIErrorSchema);
+
+export const createItemMutationRequestSchema = z.lazy(() => createItemRequestSchema);
+
+export const createItemMutationResponseSchema = z.lazy(() => createItem201Schema);
+
+export const getItemPathParamsSchema = z.object({
+  id: z.uuid().describe('Item ID'),
+});
+
+/**
+ * @description Item details
+ */
+export const getItem200Schema = z.lazy(() => itemSchema);
+
+/**
+ * @description Resource not found
+ */
+export const getItem404Schema = z.lazy(() => APIErrorSchema);
+
+/**
+ * @description Internal server error
+ */
+export const getItem500Schema = z.lazy(() => APIErrorSchema);
+
+export const getItemQueryResponseSchema = z.lazy(() => getItem200Schema);
+
+export const updateItemPathParamsSchema = z.object({
+  id: z.uuid().describe('Item ID'),
+});
+
+/**
+ * @description Item updated successfully
+ */
+export const updateItem200Schema = z.lazy(() => itemSchema);
+
+/**
+ * @description Bad request
+ */
+export const updateItem400Schema = z.lazy(() => APIErrorSchema);
+
+/**
+ * @description Resource not found
+ */
+export const updateItem404Schema = z.lazy(() => APIErrorSchema);
+
+/**
+ * @description Internal server error
+ */
+export const updateItem500Schema = z.lazy(() => APIErrorSchema);
+
+export const updateItemMutationRequestSchema = z.lazy(() => updateItemRequestSchema);
+
+export const updateItemMutationResponseSchema = z.lazy(() => updateItem200Schema);
+
+export const deleteItemPathParamsSchema = z.object({
+  id: z.uuid().describe('Item ID'),
+});
+
+/**
+ * @description Item deleted successfully
+ */
+export const deleteItem204Schema = z.any();
+
+/**
+ * @description Resource not found
+ */
+export const deleteItem404Schema = z.lazy(() => APIErrorSchema);
+
+/**
+ * @description Internal server error
+ */
+export const deleteItem500Schema = z.lazy(() => APIErrorSchema);
+
+export const deleteItemMutationResponseSchema = z.lazy(() => deleteItem204Schema);

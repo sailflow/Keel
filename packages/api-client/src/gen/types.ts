@@ -132,6 +132,125 @@ export type UserListResponse = {
   pagination: Pagination;
 };
 
+export const itemStatusEnum = {
+  pending: 'pending',
+  in_progress: 'in_progress',
+  completed: 'completed',
+} as const;
+
+export type ItemStatusEnumKey = (typeof itemStatusEnum)[keyof typeof itemStatusEnum];
+
+export type Item = {
+  /**
+   * @description Unique identifier
+   * @type string, uuid
+   */
+  id: string;
+  /**
+   * @description Owner user ID
+   * @type string, uuid
+   */
+  userId: string;
+  /**
+   * @description Item title
+   * @type string
+   */
+  title: string;
+  /**
+   * @description Item description
+   * @type string | undefined
+   */
+  description?: string;
+  /**
+   * @description Item status
+   * @type string
+   */
+  status: ItemStatusEnumKey;
+  /**
+   * @description Creation timestamp
+   * @type string, date-time
+   */
+  createdAt: string;
+  /**
+   * @description Last update timestamp
+   * @type string, date-time
+   */
+  updatedAt: string;
+};
+
+export const createItemRequestStatusEnum = {
+  pending: 'pending',
+  in_progress: 'in_progress',
+  completed: 'completed',
+} as const;
+
+export type CreateItemRequestStatusEnumKey =
+  (typeof createItemRequestStatusEnum)[keyof typeof createItemRequestStatusEnum];
+
+export type CreateItemRequest = {
+  /**
+   * @description Owner user ID
+   * @type string, uuid
+   */
+  userId: string;
+  /**
+   * @description Item title
+   * @minLength 1
+   * @type string
+   */
+  title: string;
+  /**
+   * @description Item description
+   * @type string | undefined
+   */
+  description?: string;
+  /**
+   * @description Item status
+   * @default "pending"
+   * @type string | undefined
+   */
+  status?: CreateItemRequestStatusEnumKey;
+};
+
+export const updateItemRequestStatusEnum = {
+  pending: 'pending',
+  in_progress: 'in_progress',
+  completed: 'completed',
+} as const;
+
+export type UpdateItemRequestStatusEnumKey =
+  (typeof updateItemRequestStatusEnum)[keyof typeof updateItemRequestStatusEnum];
+
+export type UpdateItemRequest = {
+  /**
+   * @description Item title
+   * @minLength 1
+   * @type string | undefined
+   */
+  title?: string;
+  /**
+   * @description Item description
+   * @type string | undefined
+   */
+  description?: string;
+  /**
+   * @description Item status
+   * @type string | undefined
+   */
+  status?: UpdateItemRequestStatusEnumKey;
+};
+
+export type ItemListResponse = {
+  /**
+   * @type array
+   */
+  data: Item[];
+  /**
+   * @type object
+   */
+  pagination: Pagination;
+};
+
 export const APIErrorCodeEnum = {
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   NOT_FOUND: 'NOT_FOUND',
@@ -355,4 +474,171 @@ export type DeleteUserMutation = {
   Response: DeleteUser204;
   PathParams: DeleteUserPathParams;
   Errors: DeleteUser404 | DeleteUser500;
+};
+
+export type ListItemsQueryParams = {
+  /**
+   * @description Page number (1-indexed)
+   * @minLength 1
+   * @default 1
+   * @type integer | undefined
+   */
+  page?: number;
+  /**
+   * @description Number of items per page
+   * @minLength 1
+   * @maxLength 100
+   * @default 10
+   * @type integer | undefined
+   */
+  limit?: number;
+  /**
+   * @description Filter by user ID
+   * @type string | undefined, uuid
+   */
+  userId?: string;
+};
+
+/**
+ * @description List of items
+ */
+export type ListItems200 = ItemListResponse;
+
+/**
+ * @description Internal server error
+ */
+export type ListItems500 = APIError;
+
+export type ListItemsQueryResponse = ListItems200;
+
+export type ListItemsQuery = {
+  Response: ListItems200;
+  QueryParams: ListItemsQueryParams;
+  Errors: ListItems500;
+};
+
+/**
+ * @description Item created successfully
+ */
+export type CreateItem201 = Item;
+
+/**
+ * @description Bad request
+ */
+export type CreateItem400 = APIError;
+
+/**
+ * @description Internal server error
+ */
+export type CreateItem500 = APIError;
+
+export type CreateItemMutationRequest = CreateItemRequest;
+
+export type CreateItemMutationResponse = CreateItem201;
+
+export type CreateItemMutation = {
+  Response: CreateItem201;
+  Request: CreateItemMutationRequest;
+  Errors: CreateItem400 | CreateItem500;
+};
+
+export type GetItemPathParams = {
+  /**
+   * @description Item ID
+   * @type string, uuid
+   */
+  id: string;
+};
+
+/**
+ * @description Item details
+ */
+export type GetItem200 = Item;
+
+/**
+ * @description Resource not found
+ */
+export type GetItem404 = APIError;
+
+/**
+ * @description Internal server error
+ */
+export type GetItem500 = APIError;
+
+export type GetItemQueryResponse = GetItem200;
+
+export type GetItemQuery = {
+  Response: GetItem200;
+  PathParams: GetItemPathParams;
+  Errors: GetItem404 | GetItem500;
+};
+
+export type UpdateItemPathParams = {
+  /**
+   * @description Item ID
+   * @type string, uuid
+   */
+  id: string;
+};
+
+/**
+ * @description Item updated successfully
+ */
+export type UpdateItem200 = Item;
+
+/**
+ * @description Bad request
+ */
+export type UpdateItem400 = APIError;
+
+/**
+ * @description Resource not found
+ */
+export type UpdateItem404 = APIError;
+
+/**
+ * @description Internal server error
+ */
+export type UpdateItem500 = APIError;
+
+export type UpdateItemMutationRequest = UpdateItemRequest;
+
+export type UpdateItemMutationResponse = UpdateItem200;
+
+export type UpdateItemMutation = {
+  Response: UpdateItem200;
+  Request: UpdateItemMutationRequest;
+  PathParams: UpdateItemPathParams;
+  Errors: UpdateItem400 | UpdateItem404 | UpdateItem500;
+};
+
+export type DeleteItemPathParams = {
+  /**
+   * @description Item ID
+   * @type string, uuid
+   */
+  id: string;
+};
+
+/**
+ * @description Item deleted successfully
+ */
+export type DeleteItem204 = any;
+
+/**
+ * @description Resource not found
+ */
+export type DeleteItem404 = APIError;
+
+/**
+ * @description Internal server error
+ */
+export type DeleteItem500 = APIError;
+
+export type DeleteItemMutationResponse = DeleteItem204;
+
+export type DeleteItemMutation = {
+  Response: DeleteItem204;
+  PathParams: DeleteItemPathParams;
+  Errors: DeleteItem404 | DeleteItem500;
 };

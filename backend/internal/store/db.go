@@ -24,17 +24,47 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.countItemsStmt, err = db.PrepareContext(ctx, countItems); err != nil {
+		return nil, fmt.Errorf("error preparing query CountItems: %w", err)
+	}
+	if q.countItemsByUserStmt, err = db.PrepareContext(ctx, countItemsByUser); err != nil {
+		return nil, fmt.Errorf("error preparing query CountItemsByUser: %w", err)
+	}
+	if q.countUsersStmt, err = db.PrepareContext(ctx, countUsers); err != nil {
+		return nil, fmt.Errorf("error preparing query CountUsers: %w", err)
+	}
+	if q.createItemStmt, err = db.PrepareContext(ctx, createItem); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateItem: %w", err)
+	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
+	}
+	if q.deleteItemStmt, err = db.PrepareContext(ctx, deleteItem); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteItem: %w", err)
 	}
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
 	}
+	if q.getItemStmt, err = db.PrepareContext(ctx, getItem); err != nil {
+		return nil, fmt.Errorf("error preparing query GetItem: %w", err)
+	}
 	if q.getUserStmt, err = db.PrepareContext(ctx, getUser); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUser: %w", err)
 	}
+	if q.getUserByEmailStmt, err = db.PrepareContext(ctx, getUserByEmail); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserByEmail: %w", err)
+	}
+	if q.listItemsStmt, err = db.PrepareContext(ctx, listItems); err != nil {
+		return nil, fmt.Errorf("error preparing query ListItems: %w", err)
+	}
+	if q.listItemsByUserStmt, err = db.PrepareContext(ctx, listItemsByUser); err != nil {
+		return nil, fmt.Errorf("error preparing query ListItemsByUser: %w", err)
+	}
 	if q.listUsersStmt, err = db.PrepareContext(ctx, listUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query ListUsers: %w", err)
+	}
+	if q.updateItemStmt, err = db.PrepareContext(ctx, updateItem); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateItem: %w", err)
 	}
 	if q.updateUserStmt, err = db.PrepareContext(ctx, updateUser); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUser: %w", err)
@@ -44,9 +74,34 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.countItemsStmt != nil {
+		if cerr := q.countItemsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countItemsStmt: %w", cerr)
+		}
+	}
+	if q.countItemsByUserStmt != nil {
+		if cerr := q.countItemsByUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countItemsByUserStmt: %w", cerr)
+		}
+	}
+	if q.countUsersStmt != nil {
+		if cerr := q.countUsersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing countUsersStmt: %w", cerr)
+		}
+	}
+	if q.createItemStmt != nil {
+		if cerr := q.createItemStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createItemStmt: %w", cerr)
+		}
+	}
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
+	if q.deleteItemStmt != nil {
+		if cerr := q.deleteItemStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteItemStmt: %w", cerr)
 		}
 	}
 	if q.deleteUserStmt != nil {
@@ -54,14 +109,39 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
 		}
 	}
+	if q.getItemStmt != nil {
+		if cerr := q.getItemStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getItemStmt: %w", cerr)
+		}
+	}
 	if q.getUserStmt != nil {
 		if cerr := q.getUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserStmt: %w", cerr)
 		}
 	}
+	if q.getUserByEmailStmt != nil {
+		if cerr := q.getUserByEmailStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserByEmailStmt: %w", cerr)
+		}
+	}
+	if q.listItemsStmt != nil {
+		if cerr := q.listItemsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listItemsStmt: %w", cerr)
+		}
+	}
+	if q.listItemsByUserStmt != nil {
+		if cerr := q.listItemsByUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listItemsByUserStmt: %w", cerr)
+		}
+	}
 	if q.listUsersStmt != nil {
 		if cerr := q.listUsersStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing listUsersStmt: %w", cerr)
+		}
+	}
+	if q.updateItemStmt != nil {
+		if cerr := q.updateItemStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateItemStmt: %w", cerr)
 		}
 	}
 	if q.updateUserStmt != nil {
@@ -106,23 +186,43 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db             DBTX
-	tx             *sql.Tx
-	createUserStmt *sql.Stmt
-	deleteUserStmt *sql.Stmt
-	getUserStmt    *sql.Stmt
-	listUsersStmt  *sql.Stmt
-	updateUserStmt *sql.Stmt
+	db                   DBTX
+	tx                   *sql.Tx
+	countItemsStmt       *sql.Stmt
+	countItemsByUserStmt *sql.Stmt
+	countUsersStmt       *sql.Stmt
+	createItemStmt       *sql.Stmt
+	createUserStmt       *sql.Stmt
+	deleteItemStmt       *sql.Stmt
+	deleteUserStmt       *sql.Stmt
+	getItemStmt          *sql.Stmt
+	getUserStmt          *sql.Stmt
+	getUserByEmailStmt   *sql.Stmt
+	listItemsStmt        *sql.Stmt
+	listItemsByUserStmt  *sql.Stmt
+	listUsersStmt        *sql.Stmt
+	updateItemStmt       *sql.Stmt
+	updateUserStmt       *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:             tx,
-		tx:             tx,
-		createUserStmt: q.createUserStmt,
-		deleteUserStmt: q.deleteUserStmt,
-		getUserStmt:    q.getUserStmt,
-		listUsersStmt:  q.listUsersStmt,
-		updateUserStmt: q.updateUserStmt,
+		db:                   tx,
+		tx:                   tx,
+		countItemsStmt:       q.countItemsStmt,
+		countItemsByUserStmt: q.countItemsByUserStmt,
+		countUsersStmt:       q.countUsersStmt,
+		createItemStmt:       q.createItemStmt,
+		createUserStmt:       q.createUserStmt,
+		deleteItemStmt:       q.deleteItemStmt,
+		deleteUserStmt:       q.deleteUserStmt,
+		getItemStmt:          q.getItemStmt,
+		getUserStmt:          q.getUserStmt,
+		getUserByEmailStmt:   q.getUserByEmailStmt,
+		listItemsStmt:        q.listItemsStmt,
+		listItemsByUserStmt:  q.listItemsByUserStmt,
+		listUsersStmt:        q.listUsersStmt,
+		updateItemStmt:       q.updateItemStmt,
+		updateUserStmt:       q.updateUserStmt,
 	}
 }

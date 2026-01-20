@@ -14,6 +14,13 @@ import type {
   GetUserPathParams,
   GetUser404,
   GetUser500,
+  ListItemsQueryResponse,
+  ListItemsQueryParams,
+  ListItems500,
+  GetItemQueryResponse,
+  GetItemPathParams,
+  GetItem404,
+  GetItem500,
   CreateUserMutationRequest,
   CreateUserMutationResponse,
   CreateUser400,
@@ -29,6 +36,20 @@ import type {
   DeleteUserPathParams,
   DeleteUser404,
   DeleteUser500,
+  CreateItemMutationRequest,
+  CreateItemMutationResponse,
+  CreateItem400,
+  CreateItem500,
+  UpdateItemMutationRequest,
+  UpdateItemMutationResponse,
+  UpdateItemPathParams,
+  UpdateItem400,
+  UpdateItem404,
+  UpdateItem500,
+  DeleteItemMutationResponse,
+  DeleteItemPathParams,
+  DeleteItem404,
+  DeleteItem500,
 } from './types.ts';
 import type {
   QueryKey,
@@ -295,6 +316,176 @@ export function useGetUser<
   return query;
 }
 
+export const listItemsQueryKey = (params: ListItemsQueryParams = {}) =>
+  [{ url: '/api/items' }, ...(params ? [params] : [])] as const;
+
+export type ListItemsQueryKey = ReturnType<typeof listItemsQueryKey>;
+
+/**
+ * @summary List items
+ * {@link /api/items}
+ */
+export async function listItems(
+  params?: ListItemsQueryParams,
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const { client: request = fetch, ...requestConfig } = config;
+
+  const res = await request<ListItemsQueryResponse, ResponseErrorConfig<ListItems500>, unknown>({
+    method: 'GET',
+    url: `/api/items`,
+    params,
+    ...requestConfig,
+  });
+  return res.data;
+}
+
+export function listItemsQueryOptions(
+  params?: ListItemsQueryParams,
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const queryKey = listItemsQueryKey(params);
+  return queryOptions<
+    ListItemsQueryResponse,
+    ResponseErrorConfig<ListItems500>,
+    ListItemsQueryResponse,
+    typeof queryKey
+  >({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      config.signal = signal;
+      return listItems(params, config);
+    },
+  });
+}
+
+/**
+ * @summary List items
+ * {@link /api/items}
+ */
+export function useListItems<
+  TData = ListItemsQueryResponse,
+  TQueryData = ListItemsQueryResponse,
+  TQueryKey extends QueryKey = ListItemsQueryKey,
+>(
+  params?: ListItemsQueryParams,
+  options: {
+    query?: Partial<
+      QueryObserverOptions<
+        ListItemsQueryResponse,
+        ResponseErrorConfig<ListItems500>,
+        TData,
+        TQueryData,
+        TQueryKey
+      >
+    > & { client?: QueryClient };
+    client?: Partial<RequestConfig> & { client?: typeof fetch };
+  } = {}
+) {
+  const { query: queryConfig = {}, client: config = {} } = options ?? {};
+  const { client: queryClient, ...queryOptions } = queryConfig;
+  const queryKey = queryOptions?.queryKey ?? listItemsQueryKey(params);
+
+  const query = useQuery(
+    {
+      ...listItemsQueryOptions(params, config),
+      queryKey,
+      ...queryOptions,
+    } as unknown as QueryObserverOptions,
+    queryClient
+  ) as UseQueryResult<TData, ResponseErrorConfig<ListItems500>> & { queryKey: TQueryKey };
+
+  query.queryKey = queryKey as TQueryKey;
+
+  return query;
+}
+
+export const getItemQueryKey = (id: GetItemPathParams['id']) =>
+  [{ url: '/api/items/:id', params: { id: id } }] as const;
+
+export type GetItemQueryKey = ReturnType<typeof getItemQueryKey>;
+
+/**
+ * @summary Get an item by ID
+ * {@link /api/items/:id}
+ */
+export async function getItem(
+  id: GetItemPathParams['id'],
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const { client: request = fetch, ...requestConfig } = config;
+
+  const res = await request<
+    GetItemQueryResponse,
+    ResponseErrorConfig<GetItem404 | GetItem500>,
+    unknown
+  >({ method: 'GET', url: `/api/items/${id}`, ...requestConfig });
+  return res.data;
+}
+
+export function getItemQueryOptions(
+  id: GetItemPathParams['id'],
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const queryKey = getItemQueryKey(id);
+  return queryOptions<
+    GetItemQueryResponse,
+    ResponseErrorConfig<GetItem404 | GetItem500>,
+    GetItemQueryResponse,
+    typeof queryKey
+  >({
+    enabled: !!id,
+    queryKey,
+    queryFn: async ({ signal }) => {
+      config.signal = signal;
+      return getItem(id, config);
+    },
+  });
+}
+
+/**
+ * @summary Get an item by ID
+ * {@link /api/items/:id}
+ */
+export function useGetItem<
+  TData = GetItemQueryResponse,
+  TQueryData = GetItemQueryResponse,
+  TQueryKey extends QueryKey = GetItemQueryKey,
+>(
+  id: GetItemPathParams['id'],
+  options: {
+    query?: Partial<
+      QueryObserverOptions<
+        GetItemQueryResponse,
+        ResponseErrorConfig<GetItem404 | GetItem500>,
+        TData,
+        TQueryData,
+        TQueryKey
+      >
+    > & { client?: QueryClient };
+    client?: Partial<RequestConfig> & { client?: typeof fetch };
+  } = {}
+) {
+  const { query: queryConfig = {}, client: config = {} } = options ?? {};
+  const { client: queryClient, ...queryOptions } = queryConfig;
+  const queryKey = queryOptions?.queryKey ?? getItemQueryKey(id);
+
+  const query = useQuery(
+    {
+      ...getItemQueryOptions(id, config),
+      queryKey,
+      ...queryOptions,
+    } as unknown as QueryObserverOptions,
+    queryClient
+  ) as UseQueryResult<TData, ResponseErrorConfig<GetItem404 | GetItem500>> & {
+    queryKey: TQueryKey;
+  };
+
+  query.queryKey = queryKey as TQueryKey;
+
+  return query;
+}
+
 export const healthCheckSuspenseQueryKey = () => [{ url: '/health' }] as const;
 
 export type HealthCheckSuspenseQueryKey = ReturnType<typeof healthCheckSuspenseQueryKey>;
@@ -530,6 +721,172 @@ export function useGetUserSuspense<
     } as unknown as UseSuspenseQueryOptions,
     queryClient
   ) as UseSuspenseQueryResult<TData, ResponseErrorConfig<GetUser404 | GetUser500>> & {
+    queryKey: TQueryKey;
+  };
+
+  query.queryKey = queryKey as TQueryKey;
+
+  return query;
+}
+
+export const listItemsSuspenseQueryKey = (params: ListItemsQueryParams = {}) =>
+  [{ url: '/api/items' }, ...(params ? [params] : [])] as const;
+
+export type ListItemsSuspenseQueryKey = ReturnType<typeof listItemsSuspenseQueryKey>;
+
+/**
+ * @summary List items
+ * {@link /api/items}
+ */
+export async function listItemsSuspense(
+  params?: ListItemsQueryParams,
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const { client: request = fetch, ...requestConfig } = config;
+
+  const res = await request<ListItemsQueryResponse, ResponseErrorConfig<ListItems500>, unknown>({
+    method: 'GET',
+    url: `/api/items`,
+    params,
+    ...requestConfig,
+  });
+  return res.data;
+}
+
+export function listItemsSuspenseQueryOptions(
+  params?: ListItemsQueryParams,
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const queryKey = listItemsSuspenseQueryKey(params);
+  return queryOptions<
+    ListItemsQueryResponse,
+    ResponseErrorConfig<ListItems500>,
+    ListItemsQueryResponse,
+    typeof queryKey
+  >({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      config.signal = signal;
+      return listItemsSuspense(params, config);
+    },
+  });
+}
+
+/**
+ * @summary List items
+ * {@link /api/items}
+ */
+export function useListItemsSuspense<
+  TData = ListItemsQueryResponse,
+  TQueryKey extends QueryKey = ListItemsSuspenseQueryKey,
+>(
+  params?: ListItemsQueryParams,
+  options: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        ListItemsQueryResponse,
+        ResponseErrorConfig<ListItems500>,
+        TData,
+        TQueryKey
+      >
+    > & { client?: QueryClient };
+    client?: Partial<RequestConfig> & { client?: typeof fetch };
+  } = {}
+) {
+  const { query: queryConfig = {}, client: config = {} } = options ?? {};
+  const { client: queryClient, ...queryOptions } = queryConfig;
+  const queryKey = queryOptions?.queryKey ?? listItemsSuspenseQueryKey(params);
+
+  const query = useSuspenseQuery(
+    {
+      ...listItemsSuspenseQueryOptions(params, config),
+      queryKey,
+      ...queryOptions,
+    } as unknown as UseSuspenseQueryOptions,
+    queryClient
+  ) as UseSuspenseQueryResult<TData, ResponseErrorConfig<ListItems500>> & { queryKey: TQueryKey };
+
+  query.queryKey = queryKey as TQueryKey;
+
+  return query;
+}
+
+export const getItemSuspenseQueryKey = (id: GetItemPathParams['id']) =>
+  [{ url: '/api/items/:id', params: { id: id } }] as const;
+
+export type GetItemSuspenseQueryKey = ReturnType<typeof getItemSuspenseQueryKey>;
+
+/**
+ * @summary Get an item by ID
+ * {@link /api/items/:id}
+ */
+export async function getItemSuspense(
+  id: GetItemPathParams['id'],
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const { client: request = fetch, ...requestConfig } = config;
+
+  const res = await request<
+    GetItemQueryResponse,
+    ResponseErrorConfig<GetItem404 | GetItem500>,
+    unknown
+  >({ method: 'GET', url: `/api/items/${id}`, ...requestConfig });
+  return res.data;
+}
+
+export function getItemSuspenseQueryOptions(
+  id: GetItemPathParams['id'],
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const queryKey = getItemSuspenseQueryKey(id);
+  return queryOptions<
+    GetItemQueryResponse,
+    ResponseErrorConfig<GetItem404 | GetItem500>,
+    GetItemQueryResponse,
+    typeof queryKey
+  >({
+    enabled: !!id,
+    queryKey,
+    queryFn: async ({ signal }) => {
+      config.signal = signal;
+      return getItemSuspense(id, config);
+    },
+  });
+}
+
+/**
+ * @summary Get an item by ID
+ * {@link /api/items/:id}
+ */
+export function useGetItemSuspense<
+  TData = GetItemQueryResponse,
+  TQueryKey extends QueryKey = GetItemSuspenseQueryKey,
+>(
+  id: GetItemPathParams['id'],
+  options: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        GetItemQueryResponse,
+        ResponseErrorConfig<GetItem404 | GetItem500>,
+        TData,
+        TQueryKey
+      >
+    > & { client?: QueryClient };
+    client?: Partial<RequestConfig> & { client?: typeof fetch };
+  } = {}
+) {
+  const { query: queryConfig = {}, client: config = {} } = options ?? {};
+  const { client: queryClient, ...queryOptions } = queryConfig;
+  const queryKey = queryOptions?.queryKey ?? getItemSuspenseQueryKey(id);
+
+  const query = useSuspenseQuery(
+    {
+      ...getItemSuspenseQueryOptions(id, config),
+      queryKey,
+      ...queryOptions,
+    } as unknown as UseSuspenseQueryOptions,
+    queryClient
+  ) as UseSuspenseQueryResult<TData, ResponseErrorConfig<GetItem404 | GetItem500>> & {
     queryKey: TQueryKey;
   };
 
@@ -794,6 +1151,266 @@ export function useDeleteUser<TContext>(
     DeleteUserMutationResponse,
     ResponseErrorConfig<DeleteUser404 | DeleteUser500>,
     { id: DeleteUserPathParams['id'] },
+    TContext
+  >;
+}
+
+export const createItemMutationKey = () => [{ url: '/api/items' }] as const;
+
+export type CreateItemMutationKey = ReturnType<typeof createItemMutationKey>;
+
+/**
+ * @summary Create a new item
+ * {@link /api/items}
+ */
+export async function createItem(
+  data: CreateItemMutationRequest,
+  config: Partial<RequestConfig<CreateItemMutationRequest>> & { client?: typeof fetch } = {}
+) {
+  const { client: request = fetch, ...requestConfig } = config;
+
+  const requestData = data;
+
+  const res = await request<
+    CreateItemMutationResponse,
+    ResponseErrorConfig<CreateItem400 | CreateItem500>,
+    CreateItemMutationRequest
+  >({ method: 'POST', url: `/api/items`, data: requestData, ...requestConfig });
+  return res.data;
+}
+
+export function createItemMutationOptions<TContext = unknown>(
+  config: Partial<RequestConfig<CreateItemMutationRequest>> & { client?: typeof fetch } = {}
+) {
+  const mutationKey = createItemMutationKey();
+  return mutationOptions<
+    CreateItemMutationResponse,
+    ResponseErrorConfig<CreateItem400 | CreateItem500>,
+    { data: CreateItemMutationRequest },
+    TContext
+  >({
+    mutationKey,
+    mutationFn: async ({ data }) => {
+      return createItem(data, config);
+    },
+  });
+}
+
+/**
+ * @summary Create a new item
+ * {@link /api/items}
+ */
+export function useCreateItem<TContext>(
+  options: {
+    mutation?: UseMutationOptions<
+      CreateItemMutationResponse,
+      ResponseErrorConfig<CreateItem400 | CreateItem500>,
+      { data: CreateItemMutationRequest },
+      TContext
+    > & { client?: QueryClient };
+    client?: Partial<RequestConfig<CreateItemMutationRequest>> & { client?: typeof fetch };
+  } = {}
+) {
+  const { mutation = {}, client: config = {} } = options ?? {};
+  const { client: queryClient, ...mutationOptions } = mutation;
+  const mutationKey = mutationOptions.mutationKey ?? createItemMutationKey();
+
+  const baseOptions = createItemMutationOptions(config) as UseMutationOptions<
+    CreateItemMutationResponse,
+    ResponseErrorConfig<CreateItem400 | CreateItem500>,
+    { data: CreateItemMutationRequest },
+    TContext
+  >;
+
+  return useMutation<
+    CreateItemMutationResponse,
+    ResponseErrorConfig<CreateItem400 | CreateItem500>,
+    { data: CreateItemMutationRequest },
+    TContext
+  >(
+    {
+      ...baseOptions,
+      mutationKey,
+      ...mutationOptions,
+    },
+    queryClient
+  ) as UseMutationResult<
+    CreateItemMutationResponse,
+    ResponseErrorConfig<CreateItem400 | CreateItem500>,
+    { data: CreateItemMutationRequest },
+    TContext
+  >;
+}
+
+export const updateItemMutationKey = () => [{ url: '/api/items/:id' }] as const;
+
+export type UpdateItemMutationKey = ReturnType<typeof updateItemMutationKey>;
+
+/**
+ * @summary Update an item
+ * {@link /api/items/:id}
+ */
+export async function updateItem(
+  id: UpdateItemPathParams['id'],
+  data?: UpdateItemMutationRequest,
+  config: Partial<RequestConfig<UpdateItemMutationRequest>> & { client?: typeof fetch } = {}
+) {
+  const { client: request = fetch, ...requestConfig } = config;
+
+  const requestData = data;
+
+  const res = await request<
+    UpdateItemMutationResponse,
+    ResponseErrorConfig<UpdateItem400 | UpdateItem404 | UpdateItem500>,
+    UpdateItemMutationRequest
+  >({ method: 'PUT', url: `/api/items/${id}`, data: requestData, ...requestConfig });
+  return res.data;
+}
+
+export function updateItemMutationOptions<TContext = unknown>(
+  config: Partial<RequestConfig<UpdateItemMutationRequest>> & { client?: typeof fetch } = {}
+) {
+  const mutationKey = updateItemMutationKey();
+  return mutationOptions<
+    UpdateItemMutationResponse,
+    ResponseErrorConfig<UpdateItem400 | UpdateItem404 | UpdateItem500>,
+    { id: UpdateItemPathParams['id']; data?: UpdateItemMutationRequest },
+    TContext
+  >({
+    mutationKey,
+    mutationFn: async ({ id, data }) => {
+      return updateItem(id, data, config);
+    },
+  });
+}
+
+/**
+ * @summary Update an item
+ * {@link /api/items/:id}
+ */
+export function useUpdateItem<TContext>(
+  options: {
+    mutation?: UseMutationOptions<
+      UpdateItemMutationResponse,
+      ResponseErrorConfig<UpdateItem400 | UpdateItem404 | UpdateItem500>,
+      { id: UpdateItemPathParams['id']; data?: UpdateItemMutationRequest },
+      TContext
+    > & { client?: QueryClient };
+    client?: Partial<RequestConfig<UpdateItemMutationRequest>> & { client?: typeof fetch };
+  } = {}
+) {
+  const { mutation = {}, client: config = {} } = options ?? {};
+  const { client: queryClient, ...mutationOptions } = mutation;
+  const mutationKey = mutationOptions.mutationKey ?? updateItemMutationKey();
+
+  const baseOptions = updateItemMutationOptions(config) as UseMutationOptions<
+    UpdateItemMutationResponse,
+    ResponseErrorConfig<UpdateItem400 | UpdateItem404 | UpdateItem500>,
+    { id: UpdateItemPathParams['id']; data?: UpdateItemMutationRequest },
+    TContext
+  >;
+
+  return useMutation<
+    UpdateItemMutationResponse,
+    ResponseErrorConfig<UpdateItem400 | UpdateItem404 | UpdateItem500>,
+    { id: UpdateItemPathParams['id']; data?: UpdateItemMutationRequest },
+    TContext
+  >(
+    {
+      ...baseOptions,
+      mutationKey,
+      ...mutationOptions,
+    },
+    queryClient
+  ) as UseMutationResult<
+    UpdateItemMutationResponse,
+    ResponseErrorConfig<UpdateItem400 | UpdateItem404 | UpdateItem500>,
+    { id: UpdateItemPathParams['id']; data?: UpdateItemMutationRequest },
+    TContext
+  >;
+}
+
+export const deleteItemMutationKey = () => [{ url: '/api/items/:id' }] as const;
+
+export type DeleteItemMutationKey = ReturnType<typeof deleteItemMutationKey>;
+
+/**
+ * @summary Delete an item
+ * {@link /api/items/:id}
+ */
+export async function deleteItem(
+  id: DeleteItemPathParams['id'],
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const { client: request = fetch, ...requestConfig } = config;
+
+  const res = await request<
+    DeleteItemMutationResponse,
+    ResponseErrorConfig<DeleteItem404 | DeleteItem500>,
+    unknown
+  >({ method: 'DELETE', url: `/api/items/${id}`, ...requestConfig });
+  return res.data;
+}
+
+export function deleteItemMutationOptions<TContext = unknown>(
+  config: Partial<RequestConfig> & { client?: typeof fetch } = {}
+) {
+  const mutationKey = deleteItemMutationKey();
+  return mutationOptions<
+    DeleteItemMutationResponse,
+    ResponseErrorConfig<DeleteItem404 | DeleteItem500>,
+    { id: DeleteItemPathParams['id'] },
+    TContext
+  >({
+    mutationKey,
+    mutationFn: async ({ id }) => {
+      return deleteItem(id, config);
+    },
+  });
+}
+
+/**
+ * @summary Delete an item
+ * {@link /api/items/:id}
+ */
+export function useDeleteItem<TContext>(
+  options: {
+    mutation?: UseMutationOptions<
+      DeleteItemMutationResponse,
+      ResponseErrorConfig<DeleteItem404 | DeleteItem500>,
+      { id: DeleteItemPathParams['id'] },
+      TContext
+    > & { client?: QueryClient };
+    client?: Partial<RequestConfig> & { client?: typeof fetch };
+  } = {}
+) {
+  const { mutation = {}, client: config = {} } = options ?? {};
+  const { client: queryClient, ...mutationOptions } = mutation;
+  const mutationKey = mutationOptions.mutationKey ?? deleteItemMutationKey();
+
+  const baseOptions = deleteItemMutationOptions(config) as UseMutationOptions<
+    DeleteItemMutationResponse,
+    ResponseErrorConfig<DeleteItem404 | DeleteItem500>,
+    { id: DeleteItemPathParams['id'] },
+    TContext
+  >;
+
+  return useMutation<
+    DeleteItemMutationResponse,
+    ResponseErrorConfig<DeleteItem404 | DeleteItem500>,
+    { id: DeleteItemPathParams['id'] },
+    TContext
+  >(
+    {
+      ...baseOptions,
+      mutationKey,
+      ...mutationOptions,
+    },
+    queryClient
+  ) as UseMutationResult<
+    DeleteItemMutationResponse,
+    ResponseErrorConfig<DeleteItem404 | DeleteItem500>,
+    { id: DeleteItemPathParams['id'] },
     TContext
   >;
 }

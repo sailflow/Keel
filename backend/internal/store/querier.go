@@ -9,10 +9,20 @@ import (
 )
 
 type Querier interface {
-	CreateUser(ctx context.Context, email string) (User, error)
-	DeleteUser(ctx context.Context, id int64) error
-	GetUser(ctx context.Context, id int64) (User, error)
-	ListUsers(ctx context.Context) ([]User, error)
+	CountItems(ctx context.Context) (int64, error)
+	CountItemsByUser(ctx context.Context, userID string) (int64, error)
+	CountUsers(ctx context.Context) (int64, error)
+	CreateItem(ctx context.Context, arg CreateItemParams) (Item, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteItem(ctx context.Context, id string) error
+	DeleteUser(ctx context.Context, id string) error
+	GetItem(ctx context.Context, id string) (Item, error)
+	GetUser(ctx context.Context, id string) (User, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
+	ListItems(ctx context.Context, arg ListItemsParams) ([]Item, error)
+	ListItemsByUser(ctx context.Context, arg ListItemsByUserParams) ([]Item, error)
+	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
+	UpdateItem(ctx context.Context, arg UpdateItemParams) (Item, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 

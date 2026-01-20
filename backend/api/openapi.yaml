@@ -129,6 +129,113 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /api/items:
+    get:
+      summary: List items
+      operationId: listItems
+      tags:
+        - Items
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - name: userId
+          in: query
+          description: Filter by user ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemListResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      summary: Create a new item
+      operationId: createItem
+      tags:
+        - Items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateItemRequest"
+      responses:
+        "201":
+          description: Item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /api/items/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ItemIdParam"
+
+    get:
+      summary: Get an item by ID
+      operationId: getItem
+      tags:
+        - Items
+      responses:
+        "200":
+          description: Item details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    put:
+      summary: Update an item
+      operationId: updateItem
+      tags:
+        - Items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateItemRequest"
+      responses:
+        "200":
+          description: Item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    delete:
+      summary: Delete an item
+      operationId: deleteItem
+      tags:
+        - Items
+      responses:
+        "204":
+          description: Item deleted successfully
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   parameters:
     PageParam:
@@ -155,6 +262,15 @@ components:
       in: path
       required: true
       description: User ID
+      schema:
+        type: string
+        format: uuid
+
+    ItemIdParam:
+      name: id
+      in: path
+      required: true
+      description: Item ID
       schema:
         type: string
         format: uuid
@@ -267,6 +383,103 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/User"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    Item:
+      type: object
+      required:
+        - id
+        - userId
+        - title
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier
+        userId:
+          type: string
+          format: uuid
+          description: Owner user ID
+        title:
+          type: string
+          description: Item title
+        description:
+          type: string
+          description: Item description
+        status:
+          type: string
+          enum:
+            - pending
+            - in_progress
+            - completed
+          description: Item status
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    CreateItemRequest:
+      type: object
+      required:
+        - userId
+        - title
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: Owner user ID
+        title:
+          type: string
+          minLength: 1
+          description: Item title
+        description:
+          type: string
+          description: Item description
+        status:
+          type: string
+          enum:
+            - pending
+            - in_progress
+            - completed
+          default: pending
+          description: Item status
+
+    UpdateItemRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Item title
+        description:
+          type: string
+          description: Item description
+        status:
+          type: string
+          enum:
+            - pending
+            - in_progress
+            - completed
+          description: Item status
+
+    ItemListResponse:
+      type: object
+      required:
+        - data
+        - pagination
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Item"
         pagination:
           $ref: "#/components/schemas/Pagination"
 

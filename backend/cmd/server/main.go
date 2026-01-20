@@ -17,7 +17,10 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/keel/api/internal/config"
 	"github.com/keel/api/internal/database"
+	"github.com/keel/api/internal/handler"
 	"github.com/keel/api/internal/middleware"
+	"github.com/keel/api/internal/service"
+	"github.com/keel/api/internal/store"
 	"github.com/keel/api/migrations"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/sync/errgroup"
@@ -47,6 +50,7 @@ func run(ctx context.Context) error {
 
 	// Database connection (Optional)
 	var db *sql.DB
+	var queries *store.Queries
 	if cfg.DatabaseURL != "" {
 		slog.Info("connecting to database", "url", cfg.DatabaseURL)
 		var err error
@@ -64,9 +68,20 @@ func run(ctx context.Context) error {
 		if err := runMigrations(db); err != nil {
 			return errors.New("failed to run migrations: " + err.Error())
 		}
+
+		// Initialize store
+		queries = store.New(db)
 	} else {
 		slog.Info("database url not set, skipping database connection")
 	}
+
+	// Initialize services
+	userService := service.NewUserService(db, queries)
+	itemService := service.NewItemService(db, queries)
+
+	// Initialize handlers
+	userHandler := handler.NewUserHandler(userService)
+	itemHandler := handler.NewItemHandler(itemService)
 
 	// Router setup
 	r := chi.NewRouter()
@@ -88,8 +103,8 @@ func run(ctx context.Context) error {
 
 	// Routes
 	r.Route("/api", func(r chi.Router) {
-		// Routes here are already prefixed with /api
-		// e.g. r.Get("/users", ...) becomes /api/users
+		userHandler.RegisterRoutes(r)
+		itemHandler.RegisterRoutes(r)
 	})
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
