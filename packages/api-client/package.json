@@ -3,30 +3,24 @@
   "version": "0.0.1",
   "private": true,
   "description": "Generated TypeScript client for Keel API",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./main.ts",
+  "types": "./main.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./main.ts"
   },
   "scripts": {
-    "generate": "kubb generate",
-    "generate:watch": "kubb generate --watch",
-    "lint": "eslint \"src/**/*.ts\"",
+    "generate": "openapi-ts",
+    "generate:watch": "openapi-ts --watch",
+    "lint": "eslint \"src/**/*.ts\" --ignore-pattern \"**/*.gen.ts\" --ignore-pattern \"src/@tanstack/**\" --ignore-pattern \"src/client/**\" --ignore-pattern \"src/core/**\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.90.19",
-    "openapi-fetch": "^0.15.0",
-    "zod": "^4.3.5"
+    "@tanstack/react-query": "^5.90.19"
   },
   "devDependencies": {
+    "@hey-api/client-fetch": "^0.13.1",
+    "@hey-api/openapi-ts": "^0.90.6",
     "@keel/config": "workspace:*",
-    "@kubb/cli": "^4.17.0",
-    "@kubb/core": "^4.17.0",
-    "@kubb/plugin-oas": "^4.17.0",
-    "@kubb/plugin-react-query": "^4.17.0",
-    "@kubb/plugin-ts": "^4.17.0",
-    "@kubb/plugin-zod": "^4.17.0",
     "openapi-typescript": "^7.10.1",
     "react": "^19.2.3",
     "typescript": "^5.3.3"

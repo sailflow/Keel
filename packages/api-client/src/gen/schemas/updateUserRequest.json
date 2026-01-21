@@ -1,9 +1,0 @@
-{
-  "type": "object",
-  "properties": {
-    "email": { "type": "string", "format": "email", "description": "User email address" },
-    "name": { "type": "string", "minLength": 1, "description": "User full name" },
-    "role": { "type": "string", "enum": ["admin", "user"], "description": "User role" }
-  },
-  "x-readme-ref-name": "UpdateUserRequest"
-}

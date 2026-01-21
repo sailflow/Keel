@@ -1,6 +1,6 @@
 'use client';
 
-import { useCreateUser, useDeleteUser, useListUsers } from '@keel/api-client';
+import { createUserMutation, deleteUserMutation, listUsersOptions } from '@keel/api-client';
 import {
   Alert,
   AlertDescription,
@@ -16,6 +16,7 @@ import {
   Label,
   Skeleton,
 } from '@sailflow/planks';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 export default function UsersPage() {
@@ -23,24 +24,28 @@ export default function UsersPage() {
   const [newUserEmail, setNewUserEmail] = useState('');
 
   // Fetch users with React Query
-  const { data: usersData, isLoading, error, refetch } = useListUsers({ page: 1, limit: 10 });
+  const {
+    data: usersData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery(listUsersOptions({ query: { page: 1, limit: 10 } }));
 
   // Mutations
-  const createUserMutation = useCreateUser({
-    mutation: {
-      onSuccess: () => {
-        refetch();
-        setNewUserName('');
-        setNewUserEmail('');
-      },
+  // Mutations
+  const createUser = useMutation({
+    ...createUserMutation(),
+    onSuccess: () => {
+      refetch();
+      setNewUserName('');
+      setNewUserEmail('');
     },
   });
 
-  const deleteUserMutation = useDeleteUser({
-    mutation: {
-      onSuccess: () => {
-        refetch();
-      },
+  const deleteUser = useMutation({
+    ...deleteUserMutation(),
+    onSuccess: () => {
+      refetch();
     },
   });
 
@@ -48,8 +53,8 @@ export default function UsersPage() {
     e.preventDefault();
     if (!newUserName || !newUserEmail) return;
 
-    createUserMutation.mutate({
-      data: {
+    createUser.mutate({
+      body: {
         name: newUserName,
         email: newUserEmail,
       },
@@ -57,7 +62,7 @@ export default function UsersPage() {
   };
 
   const handleDeleteUser = (id: string) => {
-    deleteUserMutation.mutate({ id });
+    deleteUser.mutate({ path: { id } });
   };
 
   return (
@@ -100,11 +105,11 @@ export default function UsersPage() {
                 onChange={(e) => setNewUserEmail(e.target.value)}
               />
             </div>
-            <Button type="submit" disabled={createUserMutation.isPending}>
-              {createUserMutation.isPending ? 'Creating...' : 'Create User'}
+            <Button type="submit" disabled={createUser.isPending}>
+              {createUser.isPending ? 'Creating...' : 'Create User'}
             </Button>
           </form>
-          {createUserMutation.isError && (
+          {createUser.isError && (
             <Alert variant="destructive" className="mt-4">
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>Failed to create user. Please try again.</AlertDescription>
@@ -173,8 +178,8 @@ export default function UsersPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDeleteUser(user.id)}
-                      disabled={deleteUserMutation.isPending}
+                      onClick={() => handleDeleteUser(user.id!)}
+                      disabled={deleteUser.isPending}
                     >
                       Delete
                     </Button>

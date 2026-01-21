@@ -112,9 +112,9 @@ jobs:
 
       - name: Check for changes
         run: |
-          if [ -n "$(git status --porcelain packages/api-client/src/schema.d.ts)" ]; then
+          if [ -n "$(git status --porcelain packages/api-client/src/types.gen.ts packages/api-client/src/sdk.gen.ts)" ]; then
             echo "Generated API client is out of sync!"
-            echo "Run 'make generate-api' and commit the changes."
-            git diff packages/api-client/src/schema.d.ts
+            echo "Run 'bun run generate:api' and commit the changes."
+            git diff packages/api-client/src/types.gen.ts packages/api-client/src/sdk.gen.ts
             exit 1
           fi

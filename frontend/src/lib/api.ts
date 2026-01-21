@@ -1,9 +1,11 @@
-import { createApiClient } from '@keel/api-client';
+import { client } from '@keel/api-client';
 
 import { env } from '@/env';
 
 const apiBaseUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-export const api = createApiClient({
+client.setConfig({
   baseUrl: apiBaseUrl,
 });
+
+export { client as api };

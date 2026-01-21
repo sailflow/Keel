@@ -1,8 +1,6 @@
-node_modules/
-.next/
-dist/
-build/
-coverage/
-.turbo/
-pnpm-lock.yaml
-packages/api-client/src/schema.d.ts
+# Hey API generated files
+packages/api-client/src/**/*.gen.ts
+packages/api-client/src/@tanstack/**
+packages/api-client/src/client/**
+packages/api-client/src/core/**
+packages/api-client/src/index.ts

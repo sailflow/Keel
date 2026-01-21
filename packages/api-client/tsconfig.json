@@ -5,9 +5,10 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "lib": ["ES2022", "DOM"],
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "include": ["src/**/*", ".eslintrc.js", "kubb.config.ts"],
+  "include": ["src/**/*", ".eslintrc.js", "openapi-ts.config.ts", "main.ts"],
   "exclude": ["node_modules", "dist"]
 }

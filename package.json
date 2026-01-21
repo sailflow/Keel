@@ -21,7 +21,7 @@
     "format": "bun run format:web && bun run format:api",
     "format:web": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:api": "cd backend && gofmt -w .",
-    "check-api-sync": "cd packages/api-client && bun run generate && git diff --quiet --exit-code src/schema.d.ts || (echo 'API/Client out of sync! Run \"bun run generate\" in packages/api-client' && exit 1)",
+    "check-api-sync": "cd packages/api-client && bun run generate && git diff --quiet --exit-code src/types.gen.ts src/sdk.gen.ts || (echo 'API/Client out of sync! Run \"bun run generate\" in packages/api-client' && exit 1)",
     "typecheck": "turbo typecheck",
     "test": "turbo test test:api",
     "test:web": "turbo test",
@@ -63,7 +63,7 @@
       "prettier --write",
       "eslint --fix"
     ],
-    "packages/**/*.{ts,tsx,js,jsx}": [
+    "packages/**/!(*.gen).{ts,tsx,js,jsx}": [
       "prettier --write",
       "eslint --fix"
     ],
