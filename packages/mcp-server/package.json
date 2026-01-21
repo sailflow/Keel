@@ -1,0 +1,21 @@
+{
+  "name": "@keel/mcp-server",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "scripts": {
+    "start": "bun run index.ts",
+    "lint": "eslint \"**/*.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "@sailflow/planks": "0.2.1"
+  },
+  "devDependencies": {
+    "@keel/config": "workspace:*",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

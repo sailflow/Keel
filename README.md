@@ -36,6 +36,27 @@ A starter template for building AI-powered web applications. Clone this repo to 
     - **Frontend:** `http://localhost:3000`
     - **Backend:** `http://localhost:8080` (with hot reload enabled)
 
+## AI Integration (MCP)
+
+Keel includes a custom **Model Context Protocol (MCP)** server that allows AI assistants to understand and utilize the built-in component library.
+
+To use this server with your AI assistant (Claude, Cursor, etc.), add the following configuration to your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "planks": {
+      "command": "bun",
+      "cwd": "/path/to/your/cloned/keel/repo",
+      "args": ["run", "serve-mcp"]
+    }
+  }
+}
+```
+
+> [!IMPORTANT]
+> **Replace** `/path/to/your/cloned/keel/repo` with the actual absolute path to this repository on your machine.
+
 ## Structure
 
 ```
@@ -62,6 +83,7 @@ bun run lint        # Lint all
 bun run test        # Run tests
 bun run clean       # Clean up
 bun run generate    # Regenerate API client
+bun run serve-mcp   # Start the MCP server (for AI assistants)
 ```
 
 ## Adding Features

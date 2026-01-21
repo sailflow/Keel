@@ -37,7 +37,8 @@
     "prepare": "husky",
     "configure": "bun run scripts/setup.ts",
     "clean-examples": "bun run scripts/clean-examples.ts",
-    "submit-component": "bun run scripts/submit-component.ts"
+    "submit-component": "bun run scripts/submit-component.ts",
+    "serve-mcp": "bun run packages/mcp-server/index.ts"
   },
   "devDependencies": {
     "@clack/prompts": "^0.11.0",
